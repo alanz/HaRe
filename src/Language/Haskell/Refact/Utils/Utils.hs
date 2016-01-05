@@ -210,11 +210,7 @@ runRefactGhcCd comp initialState opt = do
   let
     runMain :: IO a -> IO a
     runMain progMain = do
-      catches progMain [
-        Handler $ \(GM.GMEWrongWorkingDirectory projDir _curDir) -> do
-          cdAndDo projDir progMain
-        ]
-
+      progMain
     fullComp = runRefactGhc comp initialState opt
 
   runMain fullComp
@@ -456,4 +452,3 @@ serverModsAndFiles m = do
                  $ map summaryNodeSummary $ GHC.reachableG mg modNode
 
   return serverMods
-
