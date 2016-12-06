@@ -22,7 +22,7 @@ module Language.Haskell.Refact.API
        , logDataWithAnns
        , logExactprint
        , logParsedSource
-
+       , logAst
  -- * from `Language.Haskell.Refact.Utils.Utils`
 
        -- ** Managing the GHC / project environment
@@ -31,7 +31,9 @@ module Language.Haskell.Refact.API
 
        -- ** The bits that do the work
        , runRefacSession
+       , runMultRefacSession
        , applyRefac
+       , applyRefac'
        , refactDone
        , ApplyRefacResult
        , RefacSource(..)
@@ -41,6 +43,7 @@ module Language.Haskell.Refact.API
        , getModuleName
        , clientModsAndFiles
        , serverModsAndFiles
+       , lookupAnns  
 
        , stripCallStack
 
@@ -78,6 +81,7 @@ module Language.Haskell.Refact.API
 
        , setStateStorage
        , getStateStorage
+       , fetchAnnsFinal
 
        -- * Parsing source
        , parseDeclWithAnns
@@ -95,7 +99,9 @@ module Language.Haskell.Refact.API
                      , getLocatedEnd
                      , getStartEndLoc
                      , startEndLocGhc
-                     , emptyList, nonEmptyList
+                     , emptyList
+                     , nonEmptyList
+
 
  -- * from `Language.Haskell.Refact.Utils.TypeSyn`
     , InScopes
@@ -155,7 +161,7 @@ module Language.Haskell.Refact.API
     -- *** Locations
     ,defineLoc, useLoc, locToExp
     ,findLRdrName
-    -- ,locToName
+    ,locToNameRdr
     ,locToNameRdrPure
     ,locToRdrName
     ,getName
@@ -200,6 +206,7 @@ module Language.Haskell.Refact.API
     , everywhereStaged
     , everywhereStaged'
     , listifyStaged
+    , everywhereButMStaged
 
     -- ** Scrap Your Zipper versions
     , zeverywhereStaged
@@ -232,6 +239,42 @@ module Language.Haskell.Refact.API
   , clearPriorComments
   , balanceAllComments
 
+  , exactPrintParsed
+  , exactPrintExpr
+  , zeroDP
+  , setDP
+  , handleParseResult
+  , getAllAnns
+  , removeAnns
+  , synthesizeAnns
+  , addNewKeyword
+  , addNewKeywords
+
+  , addEmptyAnn
+  , addAnnVal
+  , addAnn
+
+   -- from Language.Haskell.Refact.Utils.Synonyms
+ , UnlocParsedHsBind
+ , ParsedGRHSs
+ , ParsedMatchGroup
+ , ParsedLMatch
+ , ParsedExpr
+ , ParsedLStmt
+ , ParsedLExpr
+ , ParsedBind
+
+ -- from Language.Haskell.Refact.Utils.Transform
+  , addSimpleImportDecl
+  , wrapInLambda
+  , wrapInPars
+  , addNewLines
+  , wrapInParsWithDPs
+  , locate
+-- from Language.Haskell.Refact.Utils.Query
+  , getVarAndRHS
+  , getHsBind
+  , isHsVar
  ) where
 
 import Language.Haskell.Refact.Utils.ExactPrint
@@ -245,6 +288,7 @@ import Language.Haskell.Refact.Utils.TypeUtils
 import Language.Haskell.Refact.Utils.Types
 import Language.Haskell.Refact.Utils.Utils
 import Language.Haskell.Refact.Utils.Variables
-
+import Language.Haskell.Refact.Utils.Transform
 import Language.Haskell.GHC.ExactPrint.Utils
-
+import Language.Haskell.Refact.Utils.Synonyms
+import Language.Haskell.Refact.Utils.Query
