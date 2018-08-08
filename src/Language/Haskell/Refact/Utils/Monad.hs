@@ -65,9 +65,6 @@ import System.Log.Logger
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
--- Monad transformer stuff
-import Control.Monad.Trans.Control ( control, liftBaseOp, liftBaseOp_)
-
 -- ---------------------------------------------------------------------
 
 data VerboseLevel = Debug | Normal | Off
@@ -241,15 +238,6 @@ instance GHC.GhcMonad RefactGhc where
 
 instance GHC.HasDynFlags RefactGhc where
   getDynFlags = GHC.hsc_dflags <$> GHC.getSession
-
--- ---------------------------------------------------------------------
-
-instance ExceptionMonad (StateT RefactState IO) where
-    gcatch act handler = control $ \run ->
-        run act `gcatch` (run . handler)
-
-    gmask = liftBaseOp gmask . liftRestore
-     where liftRestore f r = f $ liftBaseOp_ r
 
 -- ---------------------------------------------------------------------
 
