@@ -245,7 +245,7 @@ addToExport args
      doAddingToExport pnt mod
       = do let pn = pNTtoPN pnt
            unless (not (isExplicitlyExported pn mod  || modIsExported mod))
-                   $ error "The indentifier is already exported!\n"
+                   $ error "The identifier is already exported!\n"
            let exps=fromJust $ hsModExports mod
                newEnt = EntE (pNTtoEntSpec pnt)
            insertEEnt mod newEnt

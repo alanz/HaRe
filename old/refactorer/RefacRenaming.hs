@@ -10,8 +10,8 @@ import Data.List
 import TypeCheck
 import RefacUtils 
 
-{-This refactoring renames an indentifier to a user-specified name.
-  Conditions: a: the indentifier to be renamed should be defined in the current module.
+{-This refactoring renames an identifier to a user-specified name.
+  Conditions: a: the identifier to be renamed should be defined in the current module.
               b. the user provided name should be a valid name with regard to the name space of the identifier.
               c. the new name should not change the semantics of the program, and should not cause any name 
                  clash/conflict/ambiguity problem in the program. 
