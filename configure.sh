@@ -31,4 +31,5 @@ rm .ghc.environment.*
 # cabal new-configure  --with-compiler=ghc-8.6.1
 
 # cabal new-configure --with-compiler=ghc-8.6.1 --enable-tests
-cabal new-configure --with-compiler=ghc-8.6.2 --enable-tests
+# cabal new-configure --with-compiler=ghc-8.6.2 --enable-tests
+cabal new-configure --with-compiler=/opt/ghc/8.6.3/bin/ghc --enable-tests

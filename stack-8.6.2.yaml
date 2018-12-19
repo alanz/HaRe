@@ -1,0 +1,18 @@
+resolver: nightly-2018-12-17 # Last GHC 8.6.2
+
+packages:
+- .
+
+extra-deps:
+- ./submodules/cabal-helper
+- ./submodules/ghc-mod/core
+
+- cabal-plan-0.4.0.0
+- syz-0.2.0.0
+- temporary-1.2.1.1
+
+# Neded for the tests
+- conversion-1.2.1
+- conversion-case-insensitive-1.0.0.0
+- conversion-text-1.0.1
+- conversion-bytestring-1.0.1
