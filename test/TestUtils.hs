@@ -34,6 +34,9 @@ module TestUtils
        , PosToken
        , getHsDecls
        , showNameMap
+       , copyTree
+       , testDataDir
+       , testDataDir'
        ) where
 
 
@@ -44,6 +47,8 @@ import qualified Name          as GHC
 import qualified Outputable    as GHC
 import qualified Unique        as GHC
 
+import Data.Functor ((<$>))
+import Data.List ((\\))
 import Data.Algorithm.Diff
 import Data.Algorithm.DiffOutput
 import Data.Data
@@ -61,6 +66,7 @@ import Language.Haskell.Refact.Utils.Types
 import Language.Haskell.Refact.Utils.Utils
 import Numeric
 import System.Directory
+import System.FilePath
 import System.Log.Handler.Simple
 import System.Log.Logger
 
@@ -125,7 +131,18 @@ parsedFileGhcCd path fileName = do
 -- ---------------------------------------------------------------------
 
 ct :: IO a -> IO a
-ct = cdAndDo "./test/testdata/"
+ct f = do
+  dir <- testDataDir
+  -- cdAndDo "./test/testdata/"
+  cdAndDo (dir </> "test" </> "testdata") f
+
+testDataDir :: IO FilePath
+testDataDir = do
+  tmpDir <- getTemporaryDirectory
+  return (testDataDir' tmpDir)
+
+testDataDir' :: FilePath -> FilePath
+testDataDir' tmpDir = tmpDir </> "HaRe" </> "testdata"
 
 cdAndDo :: FilePath -> IO a -> IO a
 cdAndDo path fn = do
@@ -405,6 +422,35 @@ showNameMap  nm = GHC.showSDocDebug GHC.unsafeGlobalDynFlags doc
       doc = GHC.text "NameMap" GHC.<+> GHC.vcat (map one $ Map.toList nm)
       -- one (s,n) = GHC.parens $ GHC.text (showGhc (s,n,GHC.nameUnique n)) GHC.<+> GHC.ppr n
       one (s,n) = GHC.parens $ GHC.hsep [GHC.ppr s, GHC.comma, GHC.ppr n]
+
+-- ---------------------------------------------------------------------
+-- This part from https://codereview.stackexchange.com/questions/68908/copying-files-in-haskell
+
+getSubitems :: FilePath -> IO [(Bool, FilePath)]
+getSubitems path = getSubitemsRec ""
+  where
+    getChildren path =  (\\ [".", ".."]) <$> getDirectoryContents path
+
+    getSubitemsRec relPath = do
+        let absPath = path </> relPath
+        isDir <- doesDirectoryExist absPath
+        children <- if isDir then getChildren absPath else return []
+        let relChildren = [relPath </> p | p <- children]
+        ((isDir, relPath) :) . concat <$> mapM getSubitemsRec relChildren
+
+copyItem baseSourcePath baseTargetPath (isDir, relativePath) = do
+    let sourcePath = baseSourcePath </> relativePath
+    let targetPath = baseTargetPath </> relativePath
+
+    putStrLn $ "Copying " ++ sourcePath ++ " to " ++ targetPath
+    if isDir
+      then createDirectoryIfMissing False targetPath
+      else copyFile sourcePath targetPath
+
+copyTree s t = do
+    createDirectoryIfMissing True t
+    subItems <- getSubitems s
+    mapM_ (copyItem s t) subItems
 
 -- ---------------------------------------------------------------------
 -- EOF

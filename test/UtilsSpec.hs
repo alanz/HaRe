@@ -29,6 +29,7 @@ import Language.Haskell.Refact.Utils.Variables
 import Language.Haskell.Refact.Refactoring.RoundTrip
 
 import System.Directory
+import System.FilePath
 
 -- ---------------------------------------------------------------------
 
@@ -38,7 +39,7 @@ main = do
 
 spec :: Spec
 spec = do
-
+ describe "UtilsSpec" $ do
   describe "locToExp on ParsedSource" $ do
     it "p:finds the largest leftmost expression contained in a given region #1" $ do
       t <- ct $ parsedFileGhc "./TypeUtils/B.hs"
@@ -132,8 +133,9 @@ spec = do
     -- ---------------------------------
 
     it "loads a series of files based on cabal1 1" $ do
+      prefix <- testDataDir
 
-      let dir = "./test/testdata/cabal/cabal1"
+      let dir = prefix </> "./test/testdata/cabal/cabal1"
 
       let settings = defaultSettings { rsetEnabledTargets = (True,True,False,False)
                                      -- , rsetVerboseLevel = Debug
@@ -147,8 +149,8 @@ spec = do
     -- ---------------------------------
 
     it "loads a series of files based on cabal1 2" $ do
-
-      let dir = "./test/testdata/cabal/cabal1"
+      prefix <- testDataDir
+      let dir = prefix </> "./test/testdata/cabal/cabal1"
 
       let settings = defaultSettings { rsetEnabledTargets = (True,True,False,False)
                                      -- , rsetVerboseLevel = Debug
@@ -165,7 +167,8 @@ spec = do
 
     it "loads a series of files based on cabal2, which has 2 exe" $ do
 
-      let dir = "./test/testdata/cabal/cabal2"
+      prefix <- testDataDir
+      let dir = prefix </>"./test/testdata/cabal/cabal2"
 
       let settings = defaultSettings { rsetEnabledTargets = (True,True,True,True)
                                      -- , rsetVerboseLevel = Debug
@@ -207,8 +210,9 @@ spec = do
 
     it "loads a series of files based on cabal3, which has a lib and an exe" $ do
 
+      prefix <- testDataDir
       currentDir <- getCurrentDirectory
-      setCurrentDirectory "./test/testdata/cabal/cabal3"
+      setCurrentDirectory $ prefix </> "./test/testdata/cabal/cabal3"
 
       let settings = defaultSettings { rsetEnabledTargets = (True,True,True,True)
                                      -- , rsetVerboseLevel = Debug
@@ -231,8 +235,10 @@ spec = do
 
     it "loads a series of files based on cabal4, with different dependencies" $ do
 
+      prefix <- testDataDir
+      let dir = prefix </> "./test/testdata/cabal/cabal4"
       currentDir <- getCurrentDirectory
-      setCurrentDirectory "./test/testdata/cabal/cabal4"
+      setCurrentDirectory $ prefix </> "./test/testdata/cabal/cabal4"
 
       let settings = defaultSettings { rsetEnabledTargets = (True,True,True,True)
                                      -- , rsetVerboseLevel = Debug
@@ -244,7 +250,7 @@ spec = do
              setCurrentDirectory currentDir
              return [show e]
 
-      r <- catches (rename settings testOptions "./src/Foo/Bar.hs" "baz1" (3, 1)) handler
+      r <- catches (cdAndDo dir $ rename settings testOptions "./src/Foo/Bar.hs" "baz1" (3, 1)) handler
       -- r <- catches (rename settings testOptions "./src/main4.hs" "baz1" (3, 1)) handler
       r' <- mapM makeRelativeToCurrentDirectory r
       setCurrentDirectory currentDir
@@ -461,7 +467,8 @@ spec = do
     ------------------------------------
 
     it "gets modules which directly or indirectly import a module #3" $ do
-      let dir = "./test/testdata/cabal/cabal1"
+      prefix <- testDataDir
+      let dir = prefix </> "./test/testdata/cabal/cabal1"
       let
         comp = do
          parseSourceFileGhc "./src/Foo/Bar.hs"
@@ -471,11 +478,12 @@ spec = do
       (mg,_s) <- cdAndDo dir $ runRefactGhc comp initialState testOptions
       -- (mg,_s) <- ct $ runRefactGhc comp initialLogOnState testOptions
       showGhc (map GM.mpModule mg) `shouldBe` "[Main]"
+
     ------------------------------------
 
     it "gets modules which import a module in different cabal targets" $ do
-      currentDir <- getCurrentDirectory
-      setCurrentDirectory "./test/testdata/cabal/cabal2"
+      prefix <- testDataDir
+      let dir = prefix </> "./test/testdata/cabal/cabal2"
 
       let
         comp = do
@@ -483,10 +491,8 @@ spec = do
          tm <- getRefactTargetModule
          g <- clientModsAndFiles tm
          return g
-      (mg,_s) <- runRefactGhc comp initialState testOptions
+      (mg,_s) <- cdAndDo dir $ runRefactGhc comp initialState testOptions
       showGhc (map GM.mpModule mg) `shouldBe` "[Main, Main]"
-
-      setCurrentDirectory currentDir
 
     ------------------------------------
 
@@ -712,15 +718,16 @@ spec = do
 
   describe "directoryManagement" $ do
     it "loads a file from a sub directory" $ do
+      prefix <- testDataDir
       t <- ct $ parsedFileGhc "./FreeAndDeclared/DeclareS.hs"
-      fileName <- makeAbsolute "./test/testdata/FreeAndDeclared/DeclareS.hs"
+      fileName <- makeAbsolute $ prefix </> "./test/testdata/FreeAndDeclared/DeclareS.hs"
       let parsed = GHC.pm_parsed_source $ GHC.tm_parsed_module t
       let
         comp = do
           parseSourceFileGhc fileName
           r <- hsFreeAndDeclaredPNs parsed
           return r
-      ((res),_s) <- cdAndDo "./test/testdata/FreeAndDeclared" $
+      ((res),_s) <- cdAndDo (prefix </> "./test/testdata/FreeAndDeclared") $
                      runRefactGhc comp initialState testOptions
 
       -- Free Vars

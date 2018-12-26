@@ -8,39 +8,51 @@ import Control.Monad
 import qualified Turtle as Tu
 import qualified Control.Foldl as Fold
 import System.Directory
+import System.FilePath
 import System.Process (readProcess)
+import TestUtils
 
 import Test.Hspec.Runner
 import qualified Spec
 
 -- ---------------------------------------------------------------------
 
+data BuildType = BuildV1 | BuildV2 | BuildStack deriving (Eq,Show)
+
 main :: IO ()
 main = do
-  cleanupDirs (Tu.ends "/.stack-work")
-  cleanupDirs (Tu.ends "/dist")
-  cleanupDirs (Tu.ends "/dist-newstyle")
-  if True
-  -- if False
-    then setupStackFiles
-    else setupDistDirs
+  let build = BuildV1
+  prefix <- testDataDir
+  copyTestDirs prefix
+  cleanupDirs prefix (Tu.ends "/.stack-work")
+  cleanupDirs prefix (Tu.ends "/dist")
+  cleanupDirs prefix (Tu.ends "/dist-newstyle")
+  deleteStackFiles prefix
+  -- if True
+  case build of
+    BuildStack -> setupStackFiles prefix
+    _ -> setupDistDirs build prefix
   hspec Spec.spec
 
 -- ---------------------------------------------------------------------
 
-setupStackFiles :: IO ()
-setupStackFiles =
-  forM_ stackFiles $ \f ->
+setupStackFiles :: FilePath -> IO ()
+setupStackFiles prefix =
+  forM_ (stackFiles prefix) $ \f ->
     writeFile f stackFileContents
 
-setupDistDirs :: IO ()
-setupDistDirs =
-  forM_ cabalDirs $ \d -> do
+setupDistDirs :: BuildType -> FilePath -> IO ()
+setupDistDirs build prefix =
+  forM_ (cabalDirs prefix) $ \d -> do
     withCurrentDirectory d $ do
-      run "cabal" [ "install", "--dependencies-only" ]
-      run "cabal" [ "configure" ]
-      -- run "cabal-2.4" [ "install", "--dependencies-only", "--allow-newer" ]
-      -- run "cabal-2.4" [ "configure", "--allow-newer" ]
+      case build of
+        BuildV1 -> do
+          run "cabal" [ "v1-install", "--dependencies-only" ]
+          run "cabal" [ "v1-configure" ]
+        BuildV2 -> do
+          -- run "cabal" [ "new-configure" ]
+          run "cabal" [ "new-build" ]
+        BuildStack -> error "setupDistDirs"
 
 -- This is shamelessly copied from cabal-helper GhcSession test.
 run :: String -> [String] -> IO ()
@@ -52,8 +64,8 @@ run x xs = do
 
 -- ---------------------------------------------------------------------
 
-cabalDirs :: [FilePath]
-cabalDirs =
+cabalDirs :: FilePath -> [FilePath]
+cabalDirs prefix = map (\p -> prefix </> p)
   [  "./test/testdata/"
    , "./test/testdata/cabal/cabal3/"
    , "./test/testdata/cabal/foo/"
@@ -62,8 +74,8 @@ cabalDirs =
    , "./test/testdata/cabal/cabal2/"
   ]
 
-stackFiles :: [FilePath]
-stackFiles = map (++"stack.yaml") cabalDirs
+stackFiles :: FilePath -> [FilePath]
+stackFiles prefix = map (++"stack.yaml") (cabalDirs prefix)
 
 -- |Choose a resolver based on the current compiler, otherwise HaRe/ghc-mod will
 -- not be able to load the files
@@ -139,19 +151,29 @@ stackFileContents = unlines
 
 -- ---------------------------------------------------------------------
 
-cleanupDirs :: Tu.Pattern t -> IO ()
-cleanupDirs ending = do
-  dirs <- getDirs ending
+copyTestDirs :: FilePath -> IO ()
+copyTestDirs prefix = do
+  copyTree "./test/testdata" (prefix </> "test" </> "testdata")
+
+-- ---------------------------------------------------------------------
+
+cleanupDirs :: FilePath -> Tu.Pattern t -> IO ()
+cleanupDirs prefix ending = do
+  dirs <- getDirs prefix ending
   forM_ dirs  $ \dir -> Tu.rmtree dir
 
-getDirs :: Tu.Pattern t -> IO [Tu.FilePath]
-getDirs ending = do
+deleteStackFiles :: FilePath -> IO ()
+deleteStackFiles prefix = forM_ (stackFiles prefix) $ \f -> do
+  exists <- doesFileExist f
+  when exists $ removeFile f
+
+getDirs :: FilePath -> Tu.Pattern t -> IO [Tu.FilePath]
+getDirs prefix ending = do
   let
-    -- dirs = Tu.find (Tu.ends "/.stack-work") "./test"
-    dirs = Tu.find ending "./test"
+    dirs = Tu.find ending (Tu.decodeString prefix Tu.</> "./test")
   Tu.fold dirs Fold.list
 
-listStackDirs :: IO ()
-listStackDirs = Tu.sh $ do
-  dirs <- Tu.find (Tu.ends "/.stack-work") "./test"
+listStackDirs :: Tu.FilePath -> IO ()
+listStackDirs prefix = Tu.sh $ do
+  dirs <- Tu.find (Tu.ends "/.stack-work") (prefix Tu.</> "/test")
   mapM Tu.echo $ Tu.textToLines $ "found:" Tu.<> (Tu.repr dirs)
