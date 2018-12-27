@@ -47,8 +47,10 @@ setupDistDirs build prefix =
     withCurrentDirectory d $ do
       case build of
         BuildV1 -> do
-          run "cabal" [ "v1-install", "--dependencies-only" ]
-          run "cabal" [ "v1-configure" ]
+          run "cabal" [ "install", "--dependencies-only" ]
+          run "cabal" [ "configure" ]
+          -- run "cabal" [ "v1-install", "--dependencies-only" ]
+          -- run "cabal" [ "v1-configure" ]
         BuildV2 -> do
           -- run "cabal" [ "new-configure" ]
           run "cabal" [ "new-build" ]
