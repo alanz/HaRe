@@ -1,4 +1,4 @@
-resolver: nightly-2018-12-18 # GHC 8.6.3
+resolver: lts-13.0 # GHC 8.6.3
 
 packages:
 - .
@@ -7,7 +7,8 @@ extra-deps:
 - ./submodules/cabal-helper
 - ./submodules/ghc-mod/core
 
-- cabal-plan-0.4.0.0
+- cabal-plan-0.5.0.0
+- pretty-show-1.8.2
 - syz-0.2.0.0
 - temporary-1.2.1.1
 
