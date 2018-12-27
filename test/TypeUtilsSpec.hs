@@ -28,6 +28,9 @@ import Language.Haskell.Refact.Utils.Utils
 import Language.Haskell.Refact.Utils.Variables
 
 import Data.List
+import System.FilePath
+
+-- ---------------------------------------------------------------------
 
 main :: IO ()
 main = do
@@ -35,7 +38,7 @@ main = do
 
 spec :: Spec
 spec = do
-
+ describe "TypeUtilsSpec" $ do
   -- -------------------------------------------------------------------
 {-
   describe "findAllNameOccurences" $ do
@@ -3456,8 +3459,9 @@ spec = do
 
   describe "equivalentNameInNewMod" $ do
     it "finds equivalent name for normal import" $ do
+      prefix <- testDataDir
       let
-        ctc = cdAndDo "./test/testdata/cabal/foo"
+        ctc = cdAndDo $ prefix </> "./test/testdata/cabal/foo"
       let
         comp = do
           parseSourceFileGhc "./src/Foo/Bar.hs"
@@ -3479,8 +3483,9 @@ spec = do
     -- ---------------------------------
 
     it "finds equivalent name for qualified import" $ do
+      prefix <- testDataDir
       let
-        ctc = cdAndDo "./test/testdata/cabal/cabal4"
+        ctc = cdAndDo $ prefix </> "./test/testdata/cabal/cabal4"
       let
         comp = do
           parseSourceFileGhc "./src/Foo/Bar.hs"

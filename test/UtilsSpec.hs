@@ -126,8 +126,8 @@ spec = do
       -- r <- ct $ roundTrip logTestSettings testOptions "BCpp.hs"
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["BCpp.hs"]
-      diff <- compareFiles "./test/testdata/BCpp.refactored.hs"
-                           "./test/testdata/BCpp.hs"
+      diff <- ct $ compareFiles "./BCpp.refactored.hs"
+                                "./BCpp.hs"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -647,6 +647,7 @@ spec = do
 
           return (pr,g)
       ((t, mg), _s) <- ct $ runRefactGhc comp  initialState testOptions
+      -- ((t, mg), _s) <- ct $ runRefactGhc comp  initialLogOnState testOptions
       let parsed = GHC.pm_parsed_source $ GHC.tm_parsed_module t
       (show $ getModuleName parsed) `shouldBe` "Just (ModuleName \"DupDef.Dd1\",\"DupDef.Dd1\")"
       showGhc (map GM.mpModule mg) `shouldBe` "[DupDef.Dd2, DupDef.Dd3, Main, Main]"

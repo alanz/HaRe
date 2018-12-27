@@ -20,8 +20,8 @@ spec = do
       -- r <- ct $ ifToCase logTestSettings testOptions  "Case/BSimple.hs" (4,7) (4,43)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/BSimple.hs"]
-      diff <- compareFiles "./test/testdata/Case/BSimple.refactored.hs"
-                           "./test/testdata/Case/BSimpleExpected.hs"
+      diff <- ct $ compareFiles "./Case/BSimple.refactored.hs"
+                                "./Case/BSimpleExpected.hs"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -31,8 +31,8 @@ spec = do
       -- r <- ct $ ifToCase logTestSettings testOptions  "Case/Foo.hs" (4,1) (9,1)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/Foo.hs"]
-      diff <- compareFiles "./test/testdata/Case/Foo.refactored.hs"
-                           "./test/testdata/Case/Foo.hs.expected"
+      diff <- ct $ compareFiles "./Case/Foo.refactored.hs"
+                                "./Case/Foo.hs.expected"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -42,8 +42,8 @@ spec = do
       -- r <- ct $ ifToCase logTestSettings testOptions  "Case/B.hs" (4,7) (4,43)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/B.hs"]
-      diff <- compareFiles "./test/testdata/Case/B.refactored.hs"
-                           "./test/testdata/Case/B.hs.expected"
+      diff <- ct $ compareFiles "./Case/B.refactored.hs"
+                                "./Case/B.hs.expected"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -54,8 +54,8 @@ spec = do
       -- ct $ ifToCase logTestSettings testOptions "Case/C.hs" (5,7) (10,1)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/C.hs"]
-      diff <- compareFiles "./test/testdata/Case/C.refactored.hs"
-                           "./test/testdata/Case/C.hs.expected"
+      diff <- ct $ compareFiles "./Case/C.refactored.hs"
+                                "./Case/C.hs.expected"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -65,8 +65,8 @@ spec = do
       -- ct $ ifToCase logTestSettings testOptions "Case/D.hs" (5,7) (12,1)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/D.hs"]
-      diff <- compareFiles "./test/testdata/Case/D.refactored.hs"
-                           "./test/testdata/Case/D.hs.expected"
+      diff <- ct $ compareFiles "./Case/D.refactored.hs"
+                                "./Case/D.hs.expected"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -76,8 +76,8 @@ spec = do
       -- ct $ ifToCase logTestSettings testOptions "Case/E.hs" (7,8) (13,20)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/E.hs"]
-      diff <- compareFiles "./test/testdata/Case/E.refactored.hs"
-                           "./test/testdata/Case/E.hs.expected"
+      diff <- ct $ compareFiles "./Case/E.refactored.hs"
+                                "./Case/E.hs.expected"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -87,18 +87,16 @@ spec = do
       -- ct $ ifToCase logTestSettings testOptions "Case/F.hs" (4,7) (8,20)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/F.hs"]
-      diff <- compareFiles "./test/testdata/Case/F.refactored.hs"
-                           "./test/testdata/Case/F.hs.expected"
+      diff <- ct $ compareFiles "./Case/F.refactored.hs"
+                                "./Case/F.hs.expected"
       diff `shouldBe` []
 
    -- ---------------------------------
 
     it "complains if an if-then-else is not selected" $ do
       res <- catchException(ct $ ifToCase defaultTestSettings testOptions "Case/C.hs" (4,7) (9,1))
-      -- ifToCase logTestSettings testOptions "./test/testdata/Case/C.hs" (4,7) (9,1)
+      -- ifToCase logTestSettings testOptions "./Case/C.hs" (4,7) (9,1)
       (show res) `shouldBe` "Just \"You haven't selected an if-then-else  expression!\""
 
 -- ---------------------------------------------------------------------
 -- Helper functions
-
-

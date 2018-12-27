@@ -22,8 +22,8 @@ spec = do
       -- r <- ct $ roundTrip logTestSettings testOptions "Case/BSimpleExpected.hs"
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/BSimpleExpected.hs"]
-      diff <- compareFiles "./test/testdata/Case/BSimpleExpected.refactored.hs"
-                           "./test/testdata/Case/BSimpleExpected.hs"
+      diff <- ct $ compareFiles "./Case/BSimpleExpected.refactored.hs"
+                                "./Case/BSimpleExpected.hs"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -33,8 +33,8 @@ spec = do
       -- r <- ct $ roundTrip logTestSettings testOptions "Case/FooExpected.hs"
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/FooExpected.hs"]
-      diff <- compareFiles "./test/testdata/Case/FooExpected.refactored.hs"
-                           "./test/testdata/Case/FooExpected.hs"
+      diff <- ct $ compareFiles "./Case/FooExpected.refactored.hs"
+                                "./Case/FooExpected.hs"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -44,8 +44,8 @@ spec = do
       -- r <- ct $ roundTrip logTestSettings testOptions "Case/FExpected.hs"
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/FExpected.hs"]
-      diff <- compareFiles "./test/testdata/Case/FExpected.refactored.hs"
-                           "./test/testdata/Case/FExpected.hs"
+      diff <- ct $ compareFiles "./Case/FExpected.refactored.hs"
+                                "./Case/FExpected.hs"
       diff `shouldBe` []
 
     -- ---------------------------------
@@ -55,8 +55,8 @@ spec = do
       -- r <- ct $ roundTrip logTestSettings testOptions "Case/CExpected.hs"
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Case/CExpected.hs"]
-      diff <- compareFiles "./test/testdata/Case/CExpected.refactored.hs"
-                           "./test/testdata/Case/CExpected.hs"
+      diff <- ct $ compareFiles "./Case/CExpected.refactored.hs"
+                                "./Case/CExpected.hs"
       diff `shouldBe` []
 
 -- ---------------------------------------------------------------------

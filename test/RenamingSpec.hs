@@ -7,6 +7,7 @@ import Language.Haskell.Refact.Refactoring.Renaming
 import TestUtils
 
 import System.Directory
+import System.FilePath
 
 -- ---------------------------------------------------------------------
 
@@ -17,7 +18,7 @@ main = do
 spec :: Spec
 spec = do
 
-  describe "Renaming" $ do
+  describe "RenamingSpec" $ do
     it "renames in D1 B1 C1 A1 6 6" $ do
      r <- ct $ rename defaultTestSettings testOptions "./Renaming/D1.hs" "AnotherTree" (6,6)
      -- r <- ct $ rename logTestSettings testOptions "./Renaming/D1.hs" "AnotherTree" (6,6)
@@ -494,7 +495,8 @@ spec = do
     -- ---------------------------------
 
     it "renames in lib and in main 1" $ do
-     let ct4 = cdAndDo "./test/testdata/cabal/cabal4"
+     prefix <- testDataDir
+     let ct4 = cdAndDo $ prefix </> "./test/testdata/cabal/cabal4"
      r <- ct4 $ rename defaultTestSettings testOptions  "./src/Foo/Bar.hs" "baz1" (3,1)
      -- r <- cdAndDo "./test/testdata/cabal/cabal4" $ rename logTestSettings testOptions  "./src/Foo/Bar.hs" "baz1" (3,1)
 
@@ -515,7 +517,8 @@ spec = do
     -- ---------------------------------
 
     it "renames in lib and in main 2" $ do
-     let ctf = cdAndDo "./test/testdata/cabal/foo"
+     prefix <- testDataDir
+     let ctf = cdAndDo $ prefix </> "./test/testdata/cabal/foo"
      r <- ctf $ rename defaultTestSettings testOptions  "./src/Foo/Bar.hs" "bar1" (3,1)
      -- r <- cdAndDo "./test/testdata/cabal/foo" $ rename logTestSettings testOptions  "./src/Foo/Bar.hs" "bar1" (3,1)
 

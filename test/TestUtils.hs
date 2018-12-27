@@ -92,6 +92,9 @@ hex v = "0x" ++ showHex v ""
 
 compareFiles :: FilePath -> FilePath -> IO String
 compareFiles fileA fileB = do
+  -- prefix <- testDataDir
+  -- astr <- readFile $ prefix </> fileA
+  -- bstr <- readFile $ prefix </> fileB
   astr <- readFile fileA
   bstr <- readFile fileB
   let
@@ -442,7 +445,7 @@ copyItem baseSourcePath baseTargetPath (isDir, relativePath) = do
     let sourcePath = baseSourcePath </> relativePath
     let targetPath = baseTargetPath </> relativePath
 
-    putStrLn $ "Copying " ++ sourcePath ++ " to " ++ targetPath
+    -- putStrLn $ "Copying " ++ sourcePath ++ " to " ++ targetPath
     if isDir
       then createDirectoryIfMissing False targetPath
       else copyFile sourcePath targetPath

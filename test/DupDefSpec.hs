@@ -50,8 +50,8 @@ spec = do
      -- res <- ct $ duplicateDef logTestSettings testOptions "DupDef/Dd1.hs" "tl2" (4,1)
      res' <- ct $ mapM makeRelativeToCurrentDirectory res
      (show res') `shouldBe` "[\"DupDef/Dd1.hs\"]"
-     diff <- compareFiles "./test/testdata/DupDef/Dd1.refactored.hs"
-                          "./test/testdata/DupDef/Dd1.hs.expected"
+     diff <- ct $ compareFiles "./DupDef/Dd1.refactored.hs"
+                               "./DupDef/Dd1.hs.expected"
      diff `shouldBe` []
 
     -- ---------------------------------
@@ -61,8 +61,8 @@ spec = do
      -- res <- ct $ duplicateDef logTestSettings testOptions "DupDef/Dd1.hs" "nn" (23,5)
      res' <- ct $ mapM makeRelativeToCurrentDirectory res
      (show res') `shouldBe` "[\"DupDef/Dd1.hs\"]"
-     diff <- compareFiles "./test/testdata/DupDef/Dd1.refactored.hs"
-                          "./test/testdata/DupDef/Dd1.hs.expected.nn"
+     diff <- ct $ compareFiles "./DupDef/Dd1.refactored.hs"
+                               "./DupDef/Dd1.hs.expected.nn"
      diff `shouldBe` []
 
     -- ---------------------------------
@@ -72,8 +72,8 @@ spec = do
      -- res <- ct $ duplicateDef logTestSettings testOptions "DupDef/Dd1.hs" "gg" (17,5)
      res' <- ct $ mapM makeRelativeToCurrentDirectory res
      (show res') `shouldBe` "[\"DupDef/Dd1.hs\"]"
-     diff <- compareFiles "./test/testdata/DupDef/Dd1.refactored.hs"
-                          "./test/testdata/DupDef/Dd1.hs.expected.gg"
+     diff <- ct $ compareFiles "./DupDef/Dd1.refactored.hs"
+                               "./DupDef/Dd1.hs.expected.gg"
      diff `shouldBe` []
 
     -- ---------------------------------
@@ -83,8 +83,8 @@ spec = do
      -- res <- ct $ duplicateDef logTestSettings testOptions "DupDef/Dd1.hs" "lll" (27,5)
      res' <- ct $ mapM makeRelativeToCurrentDirectory res
      (show res') `shouldBe` "[\"DupDef/Dd1.hs\"]"
-     diff <- compareFiles "./test/testdata/DupDef/Dd1.refactored.hs"
-                          "./test/testdata/DupDef/Dd1.hs.expected.ll"
+     diff <- ct $ compareFiles "./DupDef/Dd1.refactored.hs"
+                               "./DupDef/Dd1.hs.expected.ll"
      diff `shouldBe` []
 
     -- ---------------------------------
@@ -94,8 +94,8 @@ spec = do
      -- res <- ct $ duplicateDef logTestSettings testOptions "DupDef/Dd1.hs" "sss" (31,7)
      res' <- ct $ mapM makeRelativeToCurrentDirectory res
      (show res') `shouldBe` "[\"DupDef/Dd1.hs\"]"
-     diff <- compareFiles "./test/testdata/DupDef/Dd1.refactored.hs"
-                          "./test/testdata/DupDef/Dd1.hs.expected.dd"
+     diff <- ct $ compareFiles "./DupDef/Dd1.refactored.hs"
+                               "./DupDef/Dd1.hs.expected.dd"
      diff `shouldBe` []
 
     -- ---------------------------------
@@ -105,14 +105,14 @@ spec = do
      -- res <- ct $ duplicateDef logTestSettings testOptions "DupDef/Dd1.hs" "mm" (21,1)
      r' <- ct $ mapM makeRelativeToCurrentDirectory res
      (show r') `shouldBe` "[\"DupDef/Dd1.hs\",\"DupDef/Dd2.hs\",\"DupDef/Dd3.hs\"]"
-     diff <- compareFiles "./test/testdata/DupDef/Dd1.refactored.hs"
-                          "./test/testdata/DupDef/Dd1.hs.expected.mm"
+     diff <- ct $ compareFiles "./DupDef/Dd1.refactored.hs"
+                               "./DupDef/Dd1.hs.expected.mm"
      diff `shouldBe` []
-     diff2 <- compareFiles "./test/testdata/DupDef/Dd2.refactored.hs"
-                           "./test/testdata/DupDef/Dd2.hs.expected"
+     diff2 <- ct $ compareFiles "./DupDef/Dd2.refactored.hs"
+                                "./DupDef/Dd2.hs.expected"
      diff2 `shouldBe` []
-     diff3 <- compareFiles "./test/testdata/DupDef/Dd3.refactored.hs"
-                           "./test/testdata/DupDef/Dd3.hs.expected"
+     diff3 <- ct $ compareFiles "./DupDef/Dd3.refactored.hs"
+                                "./DupDef/Dd3.hs.expected"
      diff3 `shouldBe` []
 
     -- ---------------------------------
@@ -122,9 +122,8 @@ spec = do
      -- res <- ct $ duplicateDef logTestSettings testOptions "Case/B.hs" "joe" (9,1)
      res' <- ct $ mapM makeRelativeToCurrentDirectory res
      (show res') `shouldBe` "[\"Case/B.hs\"]"
-     diff <- compareFiles "./test/testdata/Case/B.refactored.hs"
-                          "./test/testdata/Case/B.hs.expected.dd"
+     diff <- ct $ compareFiles "./Case/B.refactored.hs"
+                               "./Case/B.hs.expected.dd"
      diff `shouldBe` []
 
 -- ---------------------------------------------------------------------
-

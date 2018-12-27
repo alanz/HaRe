@@ -20,6 +20,6 @@ spec = do
       -- r <- ct $ removeBracket logTestSettings testOptions "Simple/A.hs" (4,7) (4,11)
       r' <- ct $ mapM makeRelativeToCurrentDirectory r
       r' `shouldBe` ["Simple/A.hs"]
-      diff <- compareFiles "./test/testdata/Simple/A.refactored.hs"
-                           "./test/testdata/Simple/A.hs.expected"
+      diff <- ct $ compareFiles "./Simple/A.refactored.hs"
+                                "./Simple/A.hs.expected"
       diff `shouldBe` []
