@@ -21,7 +21,9 @@ data BuildType = BuildV1 | BuildV2 | BuildStack deriving (Eq,Show)
 
 main :: IO ()
 main = do
-  let build = BuildV1
+  -- let build = BuildV1
+  let build = BuildV2
+  -- let build = BuildStack
   prefix <- testDataDir
   copyTestDirs prefix
   cleanupDirs prefix (Tu.ends "/.stack-work")
@@ -53,7 +55,8 @@ setupDistDirs build prefix =
           -- run "cabal" [ "v1-configure" ]
         BuildV2 -> do
           -- run "cabal" [ "new-configure" ]
-          run "cabal" [ "new-build" ]
+          -- run "cabal" [ "new-build" ]
+          run "cabal" [ "new-build", "--dry" ]
         BuildStack -> error "setupDistDirs"
 
 -- This is shamelessly copied from cabal-helper GhcSession test.
