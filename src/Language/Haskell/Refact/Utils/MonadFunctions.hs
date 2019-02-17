@@ -89,7 +89,7 @@ import Data.List
 
 import qualified GHC           as GHC
 import qualified GhcMonad      as GHC
-import qualified GhcMod.Utils  as GM
+import qualified GhcModCore    as GM (mkRevRedirMapFunc)
 import qualified Module        as GHC
 import qualified Name          as GHC
 import qualified Unique        as GHC

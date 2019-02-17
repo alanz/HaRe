@@ -48,8 +48,8 @@ import Language.Haskell.GHC.ExactPrint.Preprocess
 import Language.Haskell.GHC.ExactPrint.Print
 import Language.Haskell.GHC.ExactPrint.Utils
 
-import qualified GhcModCore          as GM
-import qualified GhcMod.Types        as GM
+import qualified GhcModCore          as GM (getModulesGhc',Options(..),
+                                            ModulePath(..),GmModuleGraph(..))
 
 import Language.Haskell.Refact.Utils.GhcModuleGraph
 import Language.Haskell.Refact.Utils.GhcVersionSpecific

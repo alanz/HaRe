@@ -54,11 +54,10 @@ import Data.IORef
 --import Data.Time.Clock
 import Distribution.Helper
 import Exception
-import qualified GhcModCore         as GM
-import qualified GhcMod.Monad.Out   as GM
-import qualified GhcMod.Monad.Types as GM
-import qualified GhcMod.Target      as GM
-import qualified GhcMod.Types       as GM
+import qualified GhcModCore         as GM (runGhcModT,GhcModT,Options(..),IOish,cradleCabalFile,
+                                           cradle,unGmlT,gmlGetSession,gmlSetSession,gmcHomeModuleGraph,GmOut(..),MonadIO(..),GmEnv(..),
+                                           cabalResolvedComponents,
+                                           ModulePath,GmComponent,GmComponentType(..),GmModuleGraph(..))
 import Language.Haskell.Refact.Utils.Types
 import Language.Haskell.GHC.ExactPrint
 import Language.Haskell.GHC.ExactPrint.Types

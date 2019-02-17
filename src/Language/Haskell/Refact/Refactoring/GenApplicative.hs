@@ -5,8 +5,7 @@ module Language.Haskell.Refact.Refactoring.GenApplicative
   (genApplicative, compGenApplicative) where
 
 import Language.Haskell.Refact.API
-import qualified GhcModCore   as GM
-import qualified GhcMod.Types as GM
+import qualified GhcModCore   as GM (Options(..))
 import qualified GHC as GHC
 import qualified RdrName as GHC
 import System.Directory

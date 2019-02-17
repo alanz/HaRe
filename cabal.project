@@ -1,9 +1,9 @@
 packages: .
-          ./../ghc-mod/core
-          ./../cabal-helper
+          -- ./../ghc-mod/core
+          -- ./../cabal-helper
 
-          -- ./submodules/cabal-helper
-          -- ./submodules/ghc-mod/core
+          ./submodules/cabal-helper
+          ./submodules/ghc-mod/core
 
 -- repository head.hackage
 --   url: http://head.hackage.haskell.org/

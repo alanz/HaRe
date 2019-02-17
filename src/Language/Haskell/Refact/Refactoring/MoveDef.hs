@@ -30,7 +30,7 @@ import Data.Foldable
 import Data.List
 import Data.Maybe
 
-import qualified GhcModCore as GM
+import qualified GhcModCore as GM (Options(..))
 import Language.Haskell.Refact.API
 
 import Language.Haskell.GHC.ExactPrint.Types
