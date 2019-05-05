@@ -1,4 +1,4 @@
-resolver: lts-13.16
+resolver: lts-13.19
 
 packages:
 - .
@@ -18,8 +18,8 @@ extra-deps:
 - cryptohash-sha256-0.11.101.0
 - ed25519-0.0.5.0
 - hackage-security-0.5.3.0
-- haskell-lsp-0.9.0.0
-- haskell-lsp-types-0.9.0.0
+- haskell-lsp-0.11.0.0
+- haskell-lsp-types-0.11.0.0
 - managed-1.0.6
 - network-2.7.0.2
 - optional-args-1.0.2

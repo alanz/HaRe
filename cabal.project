@@ -1,7 +1,9 @@
 packages: .
-          ./submodules/ghc-mod/core
           ./submodules/cabal-helper
-          ../haskell-ide-engine/hie-plugin-api
+          ./submodules/ghc-mod/core
+          ./submodules/ghc-mod/ghc-project-types
+          ./submodules/haskell-ide-engine/hie-plugin-api
+         --  ../haskell-ide-engine/hie-plugin-api
 
 -- repository head.hackage
 --   url: http://head.hackage.haskell.org/
