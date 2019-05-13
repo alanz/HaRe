@@ -4,14 +4,16 @@ packages: .
           ./submodules/ghc-mod/ghc-project-types
           ./submodules/haskell-ide-engine/hie-plugin-api
          --  ../haskell-ide-engine/hie-plugin-api
+          ../../haskell-hvr/resolv
+          ../ghc-exactprint
 
--- repository head.hackage
---   url: http://head.hackage.haskell.org/
---   secure: True
---   root-keys: 07c59cb65787dedfaef5bd5f987ceb5f7e5ebf88b904bbd4c5cbdeb2ff71b740
---              2e8555dde16ebd8df076f1a8ef13b8f14c66bad8eafefd7d9e37d0ed711821fb
---              8f79fd2389ab2967354407ec852cbe73f2e8635793ac446d09461ffb99527f6e
---   key-threshold: 3
+repository head.hackage
+  url: http://head.hackage.haskell.org/
+  secure: True
+  root-keys: 07c59cb65787dedfaef5bd5f987ceb5f7e5ebf88b904bbd4c5cbdeb2ff71b740
+             2e8555dde16ebd8df076f1a8ef13b8f14c66bad8eafefd7d9e37d0ed711821fb
+             8f79fd2389ab2967354407ec852cbe73f2e8635793ac446d09461ffb99527f6e
+  key-threshold: 3
 
 -- https://github.com/hvr/head.hackage#as-locally-patched-packages
 -- optional-packages: packages/*/*.cabal
@@ -22,12 +24,24 @@ packages: .
 -- $ cp ${WhereThisGitHubRepoIsCloned}/patches/$PKGID.cabal ./*.cabal
 -- $ cd ../..
 
--- allow-newer:HTTP-4000.3.12:base
--- allow-newer:polyparse-1.12:base
--- allow-newer:unliftio-core-0.1.2.0:base
--- allow-newer:fclabels-2.0.3.3:base
--- allow-newer:fclabels-2.0.3.3:template-haskell
 
--- For tests
--- allow-newer:foldl-1.4.4:containers
--- allow-newer:turtle-1.5.11:containers
+allow-newer:Strafunski-StrategyLib-5.0.1.0:base
+allow-newer:async-2.2.1:base
+allow-newer:cabal-helper-0.9.0.0:base
+allow-newer:cabal-helper-0.9.0.0:*test
+allow-newer:cabal-helper-0.9.0.0:*exe
+allow-newer:cabal-helper-0.9.0.0:Cabal
+allow-newer:cabal-helper-0.9.0.0:template-haskell
+allow-newer:cabal-helper-0.9.0.0:temporary
+allow-newer:ghc-exactprint-0.6:base
+allow-newer:hashable-1.2.7.0:base
+allow-newer:process-1.6.5.0:base
+allow-newer:splitmix-0.0.2:base
+allow-newer:splitmix-0.0.2:time
+allow-newer:stm-2.5.0.0:base
+allow-newer:template-haskell-2.15.0.0:base
+allow-newer:turtle-1.5.14:base
+allow-newer:turtle-1.5.14:time
+allow-newer:unix-2.7.2.2:base
+allow-newer:unix-2.7.2.2:time
+allow-newer:integer-logarithms-1.0.3:base

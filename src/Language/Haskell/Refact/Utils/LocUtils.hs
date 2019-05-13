@@ -1,4 +1,7 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ViewPatterns       #-}
+{-# LANGUAGE PatternSynonyms    #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Language.Haskell.Refact.Utils.LocUtils(
@@ -20,6 +23,7 @@ module Language.Haskell.Refact.Utils.LocUtils(
 
 import qualified FastString    as GHC
 import qualified GHC           as GHC
+import qualified SrcLoc        as GHC
 
 import qualified Data.Generics as SYB
 
@@ -153,7 +157,11 @@ getSrcSpan t = res t
     literalInExp (GHC.L l _) = Just l
 
     literalInPat :: GHC.LPat GhcPs -> Maybe GHC.SrcSpan
+#if __GLASGOW_HASKELL__ >= 808
+    literalInPat (GHC.LL l _) = Just l
+#else
     literalInPat (GHC.L l _) = Just l
+#endif
 
     importDecl :: GHC.LImportDecl GhcPs -> Maybe GHC.SrcSpan
     importDecl (GHC.L l _) = Just l

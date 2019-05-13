@@ -198,26 +198,26 @@ Library
 
 
 
-Executable ghc-hare
-        Main-Is:                MainHaRe.hs
-        -- Other-Modules:          Paths_HaRe
-        GHC-Options:            -O0 -Wall
-        -- GHC-Options:            -prof -fprof-auto -rtsopts -caf-all
-        Hs-Source-Dirs:
-          ./app
+-- Executable ghc-hare
+--         Main-Is:                MainHaRe.hs
+--         -- Other-Modules:          Paths_HaRe
+--         GHC-Options:            -O0 -Wall
+--         -- GHC-Options:            -prof -fprof-auto -rtsopts -caf-all
+--         Hs-Source-Dirs:
+--           ./app
 
-        -- GHC 7.10.2 ships with base 4.8.1.0
-        Build-Depends:          base >= 4.8.1.0  && < 5
-                                , Cabal
-                                , HaRe
-                                , gitrev >= 1.1
-                                , hie-plugin-api
-                                , mtl
-                                , optparse-applicative >= 0.12 && < 0.15
-                                , optparse-simple
-        if impl (ghc < 7.10.2)
-            buildable: False
-        default-language:    Haskell2010
+--         -- GHC 7.10.2 ships with base 4.8.1.0
+--         Build-Depends:          base >= 4.8.1.0  && < 5
+--                                 , Cabal
+--                                 , HaRe
+--                                 , gitrev >= 1.1
+--                                 , hie-plugin-api
+--                                 , mtl
+--                                 , optparse-applicative >= 0.12 && < 0.15
+--                                 , optparse-simple
+--         if impl (ghc < 7.10.2)
+--             buildable: False
+--         default-language:    Haskell2010
 
 test-suite spec
   type:

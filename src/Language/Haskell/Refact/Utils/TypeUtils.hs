@@ -1,10 +1,12 @@
-{-# LANGUAGE CPP #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE CPP                  #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE ViewPatterns         #-}
+{-# LANGUAGE PatternSynonyms      #-}
 
 --------------------------------------------------------------------------------
 -- Module      : TypeUtils
@@ -153,12 +155,24 @@ import qualified Unique        as GHC
 import qualified Var           as GHC
 import qualified TcRnMonad     as GHC
 import qualified Var           as Var
+#if __GLASGOW_HASKELL__ >= 808
+import SrcLoc (pattern LL)
+#endif
 
 import qualified Data.Generics as SYB
 
 import qualified Data.Map as Map
 
 import Data.Generics.Strafunski.StrategyLib.StrategyLib hiding (liftIO,MonadPlus,mzero)
+
+-- ---------------------------------------------------------------------
+
+#if __GLASGOW_HASKELL__ >= 808
+#else
+-- | A Pattern Synonym to Set/Get SrcSpans
+pattern LL :: GHC.SrcSpan -> a -> GHC.Located a
+pattern LL sp e <- GHC.L sp e
+#endif
 
 -- ---------------------------------------------------------------------
 -- |Process the inscope relation returned from the parsing and module
@@ -670,7 +684,10 @@ isComplexPatDecl _ = False
 isComplexPatBind::GHC.LHsBind name -> Bool
 isComplexPatBind decl
   = case decl of
-#if __GLASGOW_HASKELL__ >= 806
+#if __GLASGOW_HASKELL__ >= 808
+         -- (GHC.PatBind _ lhs (GHC.GRHSs _ grhs (GHC.L _ lb)) _ticks) = do
+     (LL _l (GHC.PatBind _ (GHC.VarPat {}) _rhs _)) -> True
+#elif __GLASGOW_HASKELL__ >= 806
      (GHC.L _l (GHC.PatBind _ (GHC.L _ (GHC.VarPat {})) _rhs _)) -> True
 #else
      (GHC.L _l (GHC.PatBind (GHC.L _ (GHC.VarPat _)) _rhs _ty _fvs _)) -> True
@@ -1674,7 +1691,7 @@ addParamsToDecls decls pn paramPNames = do
              pats' <- liftT $ mapM addParam paramPNames
              -- logDataWithAnns "addParamToDecl.addParam:pats'" pats'
 #if __GLASGOW_HASKELL__ >= 806
-             return (GHC.L l (GHC.Match xx fn1 (pats'++pats)      rhs'))
+             return (LL l (GHC.Match xx fn1 (pats'++pats)      rhs'))
 #elif __GLASGOW_HASKELL__ >= 804
              return (GHC.L l (GHC.Match    fn1 (pats'++pats)      rhs'))
 #else
@@ -1693,9 +1710,13 @@ addParamsToDecls decls pn paramPNames = do
      = return x
    addParamToDecl _ x = return x
 
+   addParam :: GHC.RdrName -> TransformT Identity (GHC.LPat GhcPs)
    addParam n = do
      newSpan <- uniqueSrcSpanT
-#if __GLASGOW_HASKELL__ >= 806
+#if __GLASGOW_HASKELL__ >= 808
+     -- let vn = (LL newSpan (GHC.VarPat GHC.noExt (LL newSpan n)))
+     let vn = (GHC.cL newSpan (GHC.VarPat GHC.noExt (LL newSpan n))) :: GHC.LPat GhcPs
+#elif __GLASGOW_HASKELL__ >= 806
      let vn = (GHC.L newSpan (GHC.VarPat GHC.noExt (GHC.L newSpan n)))
 #elif __GLASGOW_HASKELL__ > 710
      let vn = (GHC.L newSpan (GHC.VarPat (GHC.L newSpan n)))
@@ -2743,7 +2764,7 @@ renamePN oldPN newName useQual t = do
 
     renameLPat :: HowToQual -> (GHC.LPat GhcPs) -> RefactGhc (GHC.LPat GhcPs)
 #if __GLASGOW_HASKELL__ >= 806
-    renameLPat useQual' x@(GHC.L l (GHC.VarPat y (GHC.L _ n))) = do
+    renameLPat useQual' x@(LL l (GHC.VarPat y (GHC.L _ n))) = do
 #elif __GLASGOW_HASKELL__ > 710
     renameLPat useQual' x@(GHC.L l (GHC.VarPat (GHC.L _ n))) = do
 #else
@@ -2756,7 +2777,7 @@ renamePN oldPN newName useQual t = do
           let nn = newNameCalc useQual' n
 #if __GLASGOW_HASKELL__ >= 806
           new <- makeNewName (GHC.L l n) nn
-          return (GHC.L l (GHC.VarPat y new))
+          return (LL l (GHC.VarPat y new))
 #elif __GLASGOW_HASKELL__ > 710
           new <- makeNewName (GHC.L l n) nn
           return (GHC.L l (GHC.VarPat new))
@@ -3046,7 +3067,7 @@ nameToString name = showGhcQual name
 -- identifier, otherwise return Nothing
 patToNameRdr :: NameMap -> GHC.LPat GhcPs -> Maybe GHC.Name
 #if __GLASGOW_HASKELL__ >= 806
-patToNameRdr nm (GHC.L _ (GHC.VarPat _ n)) = Just (rdrName2NamePure nm n)
+patToNameRdr nm (LL _ (GHC.VarPat _ n)) = Just (rdrName2NamePure nm n)
 #elif __GLASGOW_HASKELL__ > 710
 patToNameRdr nm (GHC.L _ (GHC.VarPat n)) = Just (rdrName2NamePure nm n)
 #else

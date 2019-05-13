@@ -3,6 +3,8 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE ViewPatterns       #-}
+{-# LANGUAGE PatternSynonyms    #-}
 --------------------------------------------------------------------------------
 -- Module      : Variables
 
@@ -77,12 +79,24 @@ import qualified GHC           as GHC
 import qualified Name          as GHC
 -- import qualified Outputable    as GHC
 import qualified RdrName       as GHC
+#if __GLASGOW_HASKELL__ >= 808
+import SrcLoc (pattern LL)
+#endif
 
 import qualified Data.Generics as SYB
 
 import qualified Data.Map as Map
 
 import Data.Generics.Strafunski.StrategyLib.StrategyLib hiding (liftIO,MonadPlus,mzero)
+
+-- ---------------------------------------------------------------------
+
+#if __GLASGOW_HASKELL__ >= 808
+#else
+-- | A Pattern Synonym to Set/Get SrcSpans
+pattern LL :: GHC.SrcSpan -> a -> GHC.Located a
+pattern LL sp e <- GHC.L sp e
+#endif
 
 -- ---------------------------------------------------------------------
 
@@ -414,9 +428,10 @@ hsFreeAndDeclaredRdr' nm t = do
 
           -- pat --
           pat :: GHC.LPat GhcPs -> Either String (FreeNames,DeclaredNames)
-          pat (GHC.L _ (GHC.WildPat _)) = mzero
+          -- pat (GHC.L _ (GHC.WildPat _)) = mzero
+          pat (LL _ (GHC.WildPat _)) = mzero
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L l (GHC.VarPat _ (GHC.L _ n)))
+          pat (LL l (GHC.VarPat _ (GHC.L _ n)))
 #elif __GLASGOW_HASKELL__ > 710
           pat (GHC.L l (GHC.VarPat (GHC.L _ n)))
 #else
@@ -424,7 +439,7 @@ hsFreeAndDeclaredRdr' nm t = do
 #endif
             = return (FN [],DN [rdrName2NamePure nm (GHC.L l n)])
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.AsPat _ ln p)) = do
+          pat (LL _ (GHC.AsPat _ ln p)) = do
 #else
           pat (GHC.L _ (GHC.AsPat ln p)) = do
 #endif
@@ -432,21 +447,21 @@ hsFreeAndDeclaredRdr' nm t = do
             return (f,DN (rdrName2NamePure nm ln:d))
 
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.ParPat _ p)) = pat p
-          pat (GHC.L _ (GHC.BangPat _ p)) = pat p
+          pat (LL _ (GHC.ParPat _ p)) = pat p
+          pat (LL _ (GHC.BangPat _ p)) = pat p
 #else
           pat (GHC.L _ (GHC.ParPat p)) = pat p
           pat (GHC.L _ (GHC.BangPat p)) = pat p
 #endif
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.ListPat _ ps)) = do
+          pat (LL _ (GHC.ListPat _ ps)) = do
 #else
           pat (GHC.L _ (GHC.ListPat ps _ _)) = do
 #endif
             fds <- mapM pat ps
             return $ mconcat fds
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.TuplePat _ ps _)) = do
+          pat (LL _ (GHC.TuplePat _ ps _)) = do
 #else
           pat (GHC.L _ (GHC.TuplePat ps _ _)) = do
 #endif
@@ -457,21 +472,21 @@ hsFreeAndDeclaredRdr' nm t = do
             fds <- mapM pat ps
             return $ mconcat fds
 #endif
-          pat (GHC.L _ (GHC.ConPatIn n det)) = do
+          pat (LL _ (GHC.ConPatIn n det)) = do
             (FN f,DN d) <- details det
             return $ (FN [rdrName2NamePure nm n],DN d) <> (FN [],DN f)
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.ViewPat _ e p)) = do
+          pat (LL _ (GHC.ViewPat _ e p)) = do
 #else
           pat (GHC.L _ (GHC.ViewPat e p _)) = do
 #endif
             fde <- hsFreeAndDeclaredRdr' nm e
             fdp <- pat p
             return $ fde <> fdp
-          pat (GHC.L _ (GHC.LitPat {})) = return emptyFD
+          pat (LL _ (GHC.LitPat {})) = return emptyFD
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.NPat {})) = return emptyFD
-          pat (GHC.L _ (GHC.NPlusKPat _ n _ _ _ _)) = return (FN [],DN [rdrName2NamePure nm n])
+          pat (LL _ (GHC.NPat {})) = return emptyFD
+          pat (LL _ (GHC.NPlusKPat _ n _ _ _ _)) = return (FN [],DN [rdrName2NamePure nm n])
 #elif __GLASGOW_HASKELL__ > 710
           pat (GHC.L _ (GHC.NPat _ _ _ _)) = return emptyFD
           pat (GHC.L _ (GHC.NPlusKPat n _ _ _ _ _)) = return (FN [],DN [rdrName2NamePure nm n])
@@ -479,10 +494,12 @@ hsFreeAndDeclaredRdr' nm t = do
           pat (GHC.L _ (GHC.NPat _ _ _)) = return emptyFD
           pat (GHC.L _ (GHC.NPlusKPat n _ _ _)) = return (FN [],DN [rdrName2NamePure nm n])
 #endif
-#if __GLASGOW_HASKELL__ >= 806
+#if __GLASGOW_HASKELL__ >= 808
+          pat (LL _ (GHC.SigPat _ p b)) = do
+#elif __GLASGOW_HASKELL__ >= 806
           pat (GHC.L _ (GHC.SigPat b p)) = do
 #else
-          pat (GHC.L _ _p@(GHC.SigPatIn p b)) = do
+          pat (GHC.L _ (GHC.SigPatIn p b)) = do
 #endif
             fdp <- pat p
             (FN fb,DN _db) <- hsFreeAndDeclaredRdr' nm b
@@ -492,30 +509,30 @@ hsFreeAndDeclaredRdr' nm t = do
           pat (GHC.L _ (GHC.SigPatOut p _)) = pat p
 #endif
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L l (GHC.CoPat _ _ p _)) = pat (GHC.L l p)
+          pat (LL l (GHC.CoPat _ _ p _)) = pat (LL l p)
 #else
           pat (GHC.L l (GHC.CoPat _ p _)) = pat (GHC.L l p)
 #endif
 
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.LazyPat _ p)) = pat p
+          pat (LL _ (GHC.LazyPat _ p)) = pat p
 #else
           pat (GHC.L _ (GHC.LazyPat p)) = pat p
 #endif
 
-          pat (GHC.L _ (GHC.ConPatOut {})) = error $ "hsFreeAndDeclaredRdr'.pat:impossible: ConPatOut"
+          pat (LL _ (GHC.ConPatOut {})) = error $ "hsFreeAndDeclaredRdr'.pat:impossible: ConPatOut"
 
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.SplicePat _ (GHC.HsQuasiQuote {})))         = return (FN [], DN [])
-          pat (GHC.L _ (GHC.SplicePat _ (GHC.HsUntypedSplice _ _ _ e))) = hsFreeAndDeclaredRdr' nm e
-          pat (GHC.L _ (GHC.SplicePat _ (GHC.HsTypedSplice _ _ _ e)))   = hsFreeAndDeclaredRdr' nm e
-          pat (GHC.L _ (GHC.SplicePat _ (GHC.HsSpliced {})))            = error $ "hsFreeAndDeclaredRdr'.pat:impossible: HsSpliced"
-          pat (GHC.L _ (GHC.SplicePat _ (GHC.XSplice {})))              = mzero
+          pat (LL _ (GHC.SplicePat _ (GHC.HsQuasiQuote {})))         = return (FN [], DN [])
+          pat (LL _ (GHC.SplicePat _ (GHC.HsUntypedSplice _ _ _ e))) = hsFreeAndDeclaredRdr' nm e
+          pat (LL _ (GHC.SplicePat _ (GHC.HsTypedSplice _ _ _ e)))   = hsFreeAndDeclaredRdr' nm e
+          pat (LL _ (GHC.SplicePat _ (GHC.HsSpliced {})))            = error $ "hsFreeAndDeclaredRdr'.pat:impossible: HsSpliced"
+          pat (LL _ (GHC.SplicePat _ (GHC.XSplice {})))              = mzero
 #elif __GLASGOW_HASKELL__ > 800
-          pat (GHC.L _ (GHC.SplicePat (GHC.HsQuasiQuote {})))     = return (FN [], DN [])
-          pat (GHC.L _ (GHC.SplicePat (GHC.HsUntypedSplice _ _ e))) = hsFreeAndDeclaredRdr' nm e
-          pat (GHC.L _ (GHC.SplicePat (GHC.HsTypedSplice _ _ e)))   = hsFreeAndDeclaredRdr' nm e
-          pat (GHC.L _ (GHC.SplicePat (GHC.HsSpliced _ _))) = error $ "hsFreeAndDeclaredRdr'.pat:impossible: HsSpliced"
+          pat (LL _ (GHC.SplicePat (GHC.HsQuasiQuote {})))     = return (FN [], DN [])
+          pat (LL _ (GHC.SplicePat (GHC.HsUntypedSplice _ _ e))) = hsFreeAndDeclaredRdr' nm e
+          pat (LL _ (GHC.SplicePat (GHC.HsTypedSplice _ _ e)))   = hsFreeAndDeclaredRdr' nm e
+          pat (LL _ (GHC.SplicePat (GHC.HsSpliced _ _))) = error $ "hsFreeAndDeclaredRdr'.pat:impossible: HsSpliced"
 #elif __GLASGOW_HASKELL__ > 710
           pat (GHC.L _ (GHC.SplicePat (GHC.HsQuasiQuote {})))     = return (FN [], DN [])
           pat (GHC.L _ (GHC.SplicePat (GHC.HsTypedSplice _ e)))   = hsFreeAndDeclaredRdr' nm e
@@ -543,11 +560,11 @@ hsFreeAndDeclaredRdr' nm t = do
 #endif
 
 #if __GLASGOW_HASKELL__ > 800
-          pat (GHC.L _ (GHC.SumPat p _ _ _)) = hsFreeAndDeclaredRdr' nm p
+          pat (LL _ (GHC.SumPat p _ _ _)) = hsFreeAndDeclaredRdr' nm p
 #endif
 
 #if __GLASGOW_HASKELL__ >= 806
-          pat (GHC.L _ (GHC.XPat _)) = mzero
+          pat (LL _ (GHC.XPat _)) = mzero
 #endif
           -- pat p = error $ "hsFreeAndDeclaredRdr'.pat:unimplemented:" ++ (showGhc p)
 
@@ -1956,7 +1973,9 @@ hsVisibleDsRdr nm e t = do
       | findNameInRdr nm e tyfaminsts = hsVisibleDsRdr nm e tyfaminsts
       | findNameInRdr nm e dfaminsts  = hsVisibleDsRdr nm e dfaminsts
       | otherwise = return (DN [])
-#if __GLASGOW_HASKELL__ >= 806
+#if __GLASGOW_HASKELL__ >= 808
+    instdecl (GHC.L _ (GHC.DataFamInstD _ (GHC.DataFamInstDecl (GHC.HsIB _ (GHC.FamEqn _ _ln _bndrs pats _fixity defn ) ))))
+#elif __GLASGOW_HASKELL__ >= 806
     instdecl (GHC.L _ (GHC.DataFamInstD _ (GHC.DataFamInstDecl (GHC.HsIB _ (GHC.FamEqn _ _ln pats _fixity defn ) ))))
 #elif __GLASGOW_HASKELL__ >= 804
     instdecl (GHC.L _ (GHC.DataFamInstD (GHC.DataFamInstDecl (GHC.HsIB _ (GHC.FamEqn _ln pats _fixity defn ) _ ))))
@@ -2129,9 +2148,9 @@ hsVisibleDsRdr nm e t = do
     -- -----------------------
 
     lpat :: GHC.LPat GhcPs -> RefactGhc DeclaredNames
-    lpat (GHC.L _ (GHC.WildPat _)) = return (DN [])
+    lpat (LL _ (GHC.WildPat _)) = return (DN [])
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L l (GHC.VarPat _ (GHC.L _ n)))
+    lpat (LL l (GHC.VarPat _ (GHC.L _ n)))
 #elif __GLASGOW_HASKELL__ > 710
     lpat (GHC.L l (GHC.VarPat (GHC.L _ n)))
 #else
@@ -2139,7 +2158,7 @@ hsVisibleDsRdr nm e t = do
 #endif
       = return (DN [rdrName2NamePure nm (GHC.L l n)])
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.AsPat _ ln p)) = do
+    lpat (LL _ (GHC.AsPat _ ln p)) = do
 #else
     lpat (GHC.L _ (GHC.AsPat ln p)) = do
 #endif
@@ -2147,21 +2166,21 @@ hsVisibleDsRdr nm e t = do
       return (DN (rdrName2NamePure nm ln:dp))
 
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.ParPat _ p)) = lpat p
-    lpat (GHC.L _ (GHC.BangPat _ p)) = lpat p
+    lpat (LL _ (GHC.ParPat _ p)) = lpat p
+    lpat (LL _ (GHC.BangPat _ p)) = lpat p
 #else
     lpat (GHC.L _ (GHC.ParPat p)) = lpat p
     lpat (GHC.L _ (GHC.BangPat p)) = lpat p
 #endif
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.ListPat _ ps)) = do
+    lpat (LL _ (GHC.ListPat _ ps)) = do
 #else
     lpat (GHC.L _ (GHC.ListPat ps _ _)) = do
 #endif
       fds <- mapM lpat ps
       return $ mconcat fds
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.TuplePat _ ps _)) = do
+    lpat (LL _ (GHC.TuplePat _ ps _)) = do
 #else
     lpat (GHC.L _ (GHC.TuplePat ps _ _)) = do
 #endif
@@ -2172,12 +2191,12 @@ hsVisibleDsRdr nm e t = do
       fds <- mapM lpat ps
       return $ mconcat fds
 #endif
-    lpat (GHC.L _ (GHC.ConPatIn n det)) = do
+    lpat (LL _ (GHC.ConPatIn n det)) = do
       (DN d) <- details det
       return $ (DN (rdrName2NamePure nm n:d))
     -- lpat (GHC.ConPatOut )
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.ViewPat _ ex p)) = do
+    lpat (LL _ (GHC.ViewPat _ ex p)) = do
 #else
     lpat (GHC.L _ (GHC.ViewPat ex p _)) = do
 #endif
@@ -2185,10 +2204,10 @@ hsVisibleDsRdr nm e t = do
       fdp <- lpat p
       return $ fde <> fdp
     -- lpat (GHC.QuasiQuotePat _)
-    lpat (GHC.L _ (GHC.LitPat {})) = return (DN [])
+    lpat (LL _ (GHC.LitPat {})) = return (DN [])
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.NPat {})) = return (DN [])
-    lpat (GHC.L _ (GHC.NPlusKPat _ n _ _ _ _)) = return (DN [rdrName2NamePure nm n])
+    lpat (LL _ (GHC.NPat {})) = return (DN [])
+    lpat (LL _ (GHC.NPlusKPat _ n _ _ _ _)) = return (DN [rdrName2NamePure nm n])
 #elif __GLASGOW_HASKELL__ > 710
     lpat (GHC.L _ (GHC.NPat _ _ _ _)) = return (DN [])
     lpat (GHC.L _ (GHC.NPlusKPat n _ _ _ _ _)) = return (DN [rdrName2NamePure nm n])
@@ -2196,7 +2215,13 @@ hsVisibleDsRdr nm e t = do
     lpat (GHC.L _ (GHC.NPat _ _ _)) = return (DN [])
     lpat (GHC.L _ (GHC.NPlusKPat n _ _ _)) = return (DN [rdrName2NamePure nm n])
 #endif
-#if __GLASGOW_HASKELL__ >= 806
+#if __GLASGOW_HASKELL__ >= 808
+    lpat (LL _ _p@(GHC.SigPat _ p b)) = do
+      dp <- lpat p
+      db <- hsVisibleDsRdr nm e b
+      -- error $ "lpat.SigPatIn:(b,fb,db)" ++ showGhc (b,fb,db)
+      return $ dp <> db
+#elif __GLASGOW_HASKELL__ >= 806
     lpat (GHC.L _ _p@(GHC.SigPat b p)) = do
       dp <- lpat p
       db <- hsVisibleDsRdr nm e b
@@ -2211,20 +2236,20 @@ hsVisibleDsRdr nm e t = do
     lpat (GHC.L _ (GHC.SigPatOut p _)) = lpat p
 #endif
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L l (GHC.CoPat _ _ p _)) = lpat (GHC.L l p)
-    lpat (GHC.L _ (GHC.LazyPat _ p)) = lpat p
+    lpat (LL l (GHC.CoPat _ _ p _)) = lpat (LL l p)
+    lpat (LL _ (GHC.LazyPat _ p)) = lpat p
 #else
     lpat (GHC.L l (GHC.CoPat _ p _)) = lpat (GHC.L l p)
     lpat (GHC.L _ (GHC.LazyPat p)) = lpat p
 #endif
 
-    lpat (GHC.L _ (GHC.ConPatOut {})) = error $ "hsFreeAndDeclared.lpat:impossible GHC.ConPatOut"
+    lpat (LL _ (GHC.ConPatOut {})) = error $ "hsFreeAndDeclared.lpat:impossible GHC.ConPatOut"
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.SplicePat _ (GHC.HsTypedSplice _ _ _ expr)))   = hsVisibleDsRdr nm e expr
-    lpat (GHC.L _ (GHC.SplicePat _ (GHC.HsUntypedSplice _ _ _ expr))) = hsVisibleDsRdr nm e expr
-    lpat (GHC.L _ (GHC.SplicePat _ (GHC.HsSpliced {})))           = return mempty
-    lpat (GHC.L _ (GHC.SplicePat _ (GHC.HsQuasiQuote {})))        = return mempty
-    lpat (GHC.L _ (GHC.SplicePat _ (GHC.XSplice {})))             = return mempty
+    lpat (LL _ (GHC.SplicePat _ (GHC.HsTypedSplice _ _ _ expr)))   = hsVisibleDsRdr nm e expr
+    lpat (LL _ (GHC.SplicePat _ (GHC.HsUntypedSplice _ _ _ expr))) = hsVisibleDsRdr nm e expr
+    lpat (LL _ (GHC.SplicePat _ (GHC.HsSpliced {})))           = return mempty
+    lpat (LL _ (GHC.SplicePat _ (GHC.HsQuasiQuote {})))        = return mempty
+    lpat (LL _ (GHC.SplicePat _ (GHC.XSplice {})))             = return mempty
 #elif __GLASGOW_HASKELL__ > 800
     lpat (GHC.L _ (GHC.SplicePat (GHC.HsTypedSplice _ _ expr)))   = hsVisibleDsRdr nm e expr
     lpat (GHC.L _ (GHC.SplicePat (GHC.HsUntypedSplice _ _ expr))) = hsVisibleDsRdr nm e expr
@@ -2239,12 +2264,12 @@ hsVisibleDsRdr nm e t = do
     lpat (GHC.L _ (GHC.SplicePat (GHC.HsSplice _ expr))) = hsVisibleDsRdr nm e expr
 #endif
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.SumPat _ p _ _)) = lpat p
+    lpat (LL _ (GHC.SumPat _ p _ _)) = lpat p
 #elif __GLASGOW_HASKELL__ > 800
     lpat (GHC.L _ (GHC.SumPat p _ _ _)) = lpat p
 #endif
 #if __GLASGOW_HASKELL__ >= 806
-    lpat (GHC.L _ (GHC.XPat _)) = mzero
+    lpat (LL _ (GHC.XPat _)) = mzero
 #endif
 
     -- ---------------------------
