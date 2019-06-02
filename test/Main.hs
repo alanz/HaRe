@@ -40,11 +40,11 @@ setupDistDirs :: IO ()
 setupDistDirs =
   forM_ cabalDirs $ \d -> do
     withCurrentDirectory d $ do
-      -- run "cabal" [ "install", "--dependencies-only" ]
-      -- run "cabal" [ "configure" ]
+      run "cabal" [ "install", "--dependencies-only" ]
+      run "cabal" [ "configure" ]
 
-      run "cabal" [ "new-configure" ]
-      -- run "cabal" [ "new-build" ]
+      -- run "cabal" [ "new-configure" ]
+      -- -- run "cabal" [ "new-build" ]
 
 -- This is shamelessly copied from cabal-helper GhcSession test.
 run :: String -> [String] -> IO ()
