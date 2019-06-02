@@ -129,7 +129,7 @@ Library
                                , directory
                                , filepath
                                , ghc
-                               , ghc-exactprint >= 0.5.8.1
+                               , ghc-exactprint >= 0.6.1
                                -- , ghc-syb-utils
                                , hie-plugin-api
                                , hslogger
@@ -286,7 +286,7 @@ test-suite spec
     , directory
     , foldl
     , ghc
-    , ghc-exactprint >= 0.5.8.1
+    , ghc-exactprint >= 0.6.1
     -- , ghc-syb-utils
     , haskell-lsp
     , hie-plugin-api

@@ -12,23 +12,15 @@ extra-deps:
 # - ../haskell-ide-engine/submodules/ghc-mod/core
 # - ../haskell-ide-engine/submodules/ghc-mod/ghc-project-types
 
-# - cabal-install-2.4.1.0
-- cabal-plan-0.4.0.0
+- cabal-plan-0.5.0.0
 - constrained-dynamic-0.1.0.0
-- cryptohash-sha256-0.11.101.0
-- ed25519-0.0.5.0
-- hackage-security-0.5.3.0
-- haskell-lsp-0.11.0.0
-- haskell-lsp-types-0.11.0.0
-- managed-1.0.6
-- network-2.7.0.2
-- optional-args-1.0.2
+- ghc-exactprint-0.6.1
+- haskell-lsp-0.13.0.0
+- haskell-lsp-types-0.13.0.0
 - pretty-show-1.8.2
-- resolv-0.1.1.2
+- rope-utf16-splay-0.3.1.0
 - syz-0.2.0.0
 - temporary-1.2.1.1
-- turtle-1.5.12
-- zip-archive-0.3.3
 
 # Neded for the tests
 - conversion-1.2.1
