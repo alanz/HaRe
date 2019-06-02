@@ -36,6 +36,9 @@ defaults: &defaults
         name: Install alex
         command: stack -j 2 --stack-yaml=${STACK_FILE} install alex
 
+        name: Install cabal-install
+        command: stack -j 2 --stack-yaml=${STACK_FILE} install cabal-install
+
     - save_cache:
         key: stack-cache-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "resolver.txt" }}
         paths:
