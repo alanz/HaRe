@@ -1,6 +1,8 @@
 -- | This module should provide all that is required to write further
 -- refactorings.
 -- NOTE: it is currently unstable, and may change without notice on minor version number bumps
+{-# LANGUAGE ViewPatterns         #-}
+{-# LANGUAGE PatternSynonyms      #-}
 module Language.Haskell.Refact.API
  (
  -- * from `Language.Haskell.Refact.Utils.Monad`
@@ -307,6 +309,8 @@ module Language.Haskell.Refact.API
   , mkFuncs
   , IsoFuncStrings
   , getInitState
+  -- * compatibility from GHC 8.8 onward
+  , pattern LL
  ) where
 
 import Language.Haskell.Refact.Utils.Isomorphic

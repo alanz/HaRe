@@ -100,7 +100,7 @@ ifToCaseTransform li@(GHC.L _ (GHC.HsIf _se e1 e2 e3)) = do
 #endif
              (GHC.MG
 #if __GLASGOW_HASKELL__ >= 806
-              GHC.noExt 
+              GHC.noExt
 #endif
               (
 #if __GLASGOW_HASKELL__ > 710
@@ -108,7 +108,7 @@ ifToCaseTransform li@(GHC.L _ (GHC.HsIf _se e1 e2 e3)) = do
 #endif
               [
 #if __GLASGOW_HASKELL__ >= 806
-                (GHC.L trueMatchLoc $ GHC.Match GHC.noExt 
+                (GHC.L trueMatchLoc $ GHC.Match GHC.noExt
 #else
                 (GHC.L trueMatchLoc $ GHC.Match
 #endif
@@ -120,7 +120,7 @@ ifToCaseTransform li@(GHC.L _ (GHC.HsIf _se e1 e2 e3)) = do
                  GHC.CaseAlt
 #endif
                  [
-                   GHC.L trueLoc1 $ GHC.ConPatIn (GHC.L trueLoc trueName) (GHC.PrefixCon [])
+                   LL trueLoc1 $ GHC.ConPatIn (LL trueLoc trueName) (GHC.PrefixCon [])
                  ]
 #if __GLASGOW_HASKELL__ >= 804
 #else
@@ -128,7 +128,7 @@ ifToCaseTransform li@(GHC.L _ (GHC.HsIf _se e1 e2 e3)) = do
 #endif
                  (GHC.GRHSs
 #if __GLASGOW_HASKELL__ >= 806
-                   GHC.noExt 
+                   GHC.noExt
 #endif
                    [
 #if __GLASGOW_HASKELL__ >= 806
@@ -149,7 +149,7 @@ ifToCaseTransform li@(GHC.L _ (GHC.HsIf _se e1 e2 e3)) = do
                 )
               , (GHC.L falseMatchLoc $ GHC.Match
 #if __GLASGOW_HASKELL__ >= 806
-                  GHC.noExt 
+                  GHC.noExt
 #endif
 #if __GLASGOW_HASKELL__ <= 710
                   Nothing
@@ -159,7 +159,7 @@ ifToCaseTransform li@(GHC.L _ (GHC.HsIf _se e1 e2 e3)) = do
                   GHC.CaseAlt
 #endif
                  [
-                   GHC.L falseLoc1 $ GHC.ConPatIn (GHC.L falseLoc falseName) (GHC.PrefixCon [])
+                   LL falseLoc1 $ GHC.ConPatIn (LL falseLoc falseName) (GHC.PrefixCon [])
                  ]
 #if __GLASGOW_HASKELL__ >= 804
 #else
@@ -167,7 +167,7 @@ ifToCaseTransform li@(GHC.L _ (GHC.HsIf _se e1 e2 e3)) = do
 #endif
                  (GHC.GRHSs
 #if __GLASGOW_HASKELL__ >= 806
-                   GHC.noExt 
+                   GHC.noExt
 #endif
                    [
 #if __GLASGOW_HASKELL__ >= 806

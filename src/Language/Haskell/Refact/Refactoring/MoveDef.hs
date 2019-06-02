@@ -219,8 +219,8 @@ liftToTopLevel' modName pn@(GHC.L _ n) = do
 
 isTupleDecl :: GHC.LHsDecl GhcPs -> Bool
 #if __GLASGOW_HASKELL__ >= 806
-isTupleDecl (GHC.L _ (GHC.ValD _ (GHC.PatBind _ (GHC.L _ GHC.TuplePat {}) _ _))) = True
-isTupleDecl (GHC.L _ (GHC.ValD _ (GHC.PatBind _ (GHC.L _ (GHC.AsPat _ _ (GHC.L _ GHC.TuplePat {}))) _ _))) = True
+isTupleDecl (GHC.L _ (GHC.ValD _ (GHC.PatBind _ (LL _ GHC.TuplePat {}) _ _))) = True
+isTupleDecl (GHC.L _ (GHC.ValD _ (GHC.PatBind _ (LL _ (GHC.AsPat _ _ (LL _ GHC.TuplePat {}))) _ _))) = True
 #else
 isTupleDecl (GHC.L _ (GHC.ValD (GHC.PatBind (GHC.L _ GHC.TuplePat {}) _ _ _ _))) = True
 isTupleDecl (GHC.L _ (GHC.ValD (GHC.PatBind (GHC.L _ (GHC.AsPat _ (GHC.L _ GHC.TuplePat {}))) _ _ _ _))) = True

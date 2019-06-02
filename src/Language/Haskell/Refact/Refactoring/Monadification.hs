@@ -10,7 +10,13 @@ import qualified GHC as GHC
 import Control.Monad.State
 import Language.Haskell.GHC.ExactPrint.Types
 import qualified Bag as GHC
+#if __GLASGOW_HASKELL__ >= 808
+import qualified BasicTypes as GHC (RecFlag,PromotionFlag(..))
+#else
 import qualified BasicTypes as GHC (RecFlag)
+#endif
+
+-- ---------------------------------------------------------------------
 
 monadification :: RefactSettings -> HIE.BiosOptions -> FilePath -> [SimpPos] -> IO [FilePath]
 monadification settings cradle fileName posLst = do
@@ -323,7 +329,7 @@ mkVarPat nm = do
 #if __GLASGOW_HASKELL__ >= 806
   nmL <- locate nm
   addAnnVal nmL
-  let pat = (GHC.VarPat GHC.noExt nmL)
+  let pat = (GHC.VarPat GHC.noExt nmL) :: GHC.Pat GhcPs
 #elif __GLASGOW_HASKELL__ >= 800
   nmL <- locate nm
   addAnnVal nmL
@@ -331,7 +337,7 @@ mkVarPat nm = do
 #else
   let pat = (GHC.VarPat nm)
 #endif
-  lPat <- locate pat
+  lPat <- locate pat :: RefactGhc (GHC.LPat GhcPs)
   addAnnVal lPat
   return lPat
 
@@ -633,7 +639,7 @@ addMonadToSig pos = do
             lVarTy <- locWithAnnVal (GHC.HsTyVar GHC.noExt GHC.NotPromoted lm) :: RefactGhc (GHC.LHsType GhcPs)
             newTy <- wrapResTy (mkRdrName "m") ty
             let appTy = (GHC.HsAppTy GHC.noExt lMonTy lVarTy)
-            lAppTy <- locWithAnnVal appTy
+            lAppTy <- locWithAnnVal appTy :: RefactGhc (GHC.LHsType GhcPs)
             zeroDP lAppTy
             setDP  (DP (0,1)) newTy
             return (GHC.L l (GHC.HsForAllTy x bndrs newTy))

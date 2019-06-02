@@ -7,6 +7,7 @@ module Language.Haskell.Refact.Refactoring.AddRmParam
 
 import qualified Data.Generics as SYB
 
+import qualified BasicTypes            as GHC
 import qualified GHC
 import qualified Name                  as GHC
 import qualified Outputable            as GHC
@@ -18,7 +19,6 @@ import Language.Haskell.GHC.ExactPrint.Types
 import Language.Haskell.GHC.ExactPrint.Transform
 import Language.Haskell.GHC.ExactPrint.Utils
 
--- import System.Directory
 import Data.Char
 import Data.Foldable
 import Data.Maybe

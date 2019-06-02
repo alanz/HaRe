@@ -128,6 +128,7 @@ import Language.Haskell.Refact.Utils.Monad
 import Language.Haskell.Refact.Utils.MonadFunctions
 import Language.Haskell.Refact.Utils.TypeSyn
 import Language.Haskell.Refact.Utils.Types
+import Language.Haskell.Refact.Utils.Utils
 import Language.Haskell.Refact.Utils.Variables
 
 import Language.Haskell.GHC.ExactPrint
@@ -155,9 +156,6 @@ import qualified Unique        as GHC
 import qualified Var           as GHC
 import qualified TcRnMonad     as GHC
 import qualified Var           as Var
-#if __GLASGOW_HASKELL__ >= 808
-import SrcLoc (pattern LL)
-#endif
 
 import qualified Data.Generics as SYB
 
@@ -165,14 +163,6 @@ import qualified Data.Map as Map
 
 import Data.Generics.Strafunski.StrategyLib.StrategyLib hiding (liftIO,MonadPlus,mzero)
 
--- ---------------------------------------------------------------------
-
-#if __GLASGOW_HASKELL__ >= 808
-#else
--- | A Pattern Synonym to Set/Get SrcSpans
-pattern LL :: GHC.SrcSpan -> a -> GHC.Located a
-pattern LL sp e <- GHC.L sp e
-#endif
 
 -- ---------------------------------------------------------------------
 -- |Process the inscope relation returned from the parsing and module

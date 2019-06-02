@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
 module Language.Haskell.Refact.Utils.Transform
   (
@@ -53,8 +54,13 @@ addSimpleImportDecl modName mqual = do
 
 
 
---Locates an piece of abstract syntax and adds a AnnVal annotation at the new location
+-- | Locates an piece of abstract syntax and adds a AnnVal annotation
+-- at the new location
+#if __GLASGOW_HASKELL__ >= 808
+locWithAnnVal :: Constraints a => GHC.SrcSpanLess a -> RefactGhc a
+#else
 locWithAnnVal :: Data a => a -> RefactGhc (GHC.Located a)
+#endif
 locWithAnnVal a = do
   lA <- locate a
   addAnnVal lA
@@ -200,16 +206,17 @@ addBackquotes var = do
   liftT $ addAnn var newAnn
 
 
---The next two functions construct variables and type variables respectively from RdrNames.
---They keep the amount of CPP in refactoring code to a minimum.
-constructHsVar :: GHC.RdrName -> RefactGhc ParsedLExpr
+-- | The next two functions construct variables and type variables
+--respectively from RdrNames.  They keep the amount of CPP in
+--refactoring code to a minimum.
+constructHsVar :: GHC.RdrName -> RefactGhc (GHC.LHsExpr GHC.GhcPs)
 constructHsVar nm = do
 #if __GLASGOW_HASKELL__ >= 806
   logm $ "New var construction ghc 8"
   lNm <- locate nm
   addAnnVal lNm
   zeroDP lNm
-  newVar <- locate (GHC.HsVar GHC.noExt lNm)
+  newVar <- locate (GHC.HsVar GHC.noExt lNm) :: RefactGhc (GHC.LHsExpr GHC.GhcPs)
 #elif __GLASGOW_HASKELL__ > 710
   logm $ "New var construction ghc 8"
   lNm <- locate nm

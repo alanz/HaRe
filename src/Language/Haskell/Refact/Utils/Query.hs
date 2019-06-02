@@ -14,6 +14,7 @@ import Language.Haskell.Refact.Utils.Monad
 import Language.Haskell.Refact.Utils.Synonyms
 import Language.Haskell.Refact.Utils.Types
 import Language.Haskell.Refact.Utils.TypeUtils
+import Language.Haskell.Refact.Utils.Utils
 import Data.Generics as SYB
 import Control.Applicative
 import FastString
@@ -30,7 +31,7 @@ getVarAndRHS :: GHC.Match GhcPs (GHC.LHsExpr GhcPs) -> RefactGhc (GHC.LPat GhcPs
 getVarAndRHS match = do
   let (Just pat) = SYB.something (Nothing `SYB.mkQ` varPat) (GHC.m_pats match)
   return (pat , GHC.m_grhss match)
-    where varPat lPat@(GHC.L _ (GHC.VarPat {} )) = Just lPat
+    where varPat lPat@(LL _ (GHC.VarPat {} )) = Just lPat
           varPat _ = Nothing
 
 -- TODO:AZ remove this, use the API version instead

@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -40,6 +41,7 @@ import Language.Haskell.Refact.Utils.GhcUtils
 
 import Language.Haskell.Refact.Utils.Monad
 import Language.Haskell.Refact.Utils.MonadFunctions
+import Language.Haskell.Refact.Utils.Utils
 
 import qualified Data.Map as Map
 
@@ -174,54 +176,71 @@ balanceAllComments la
       unless (null decls) $ moveTrailingComments t (last decls)
       return t
 
---This generates a unique location and wraps the given ast chunk with that location
---Also adds an empty annotation at that location
+-- | This generates a unique location and wraps the given ast chunk
+--with that location Also adds an empty annotation at that location
+#if __GLASGOW_HASKELL__ >= 808
+locate :: (Constraints a) => GHC.SrcSpanLess a -> RefactGhc a
+#else
 locate :: (SYB.Data a) => a -> RefactGhc (GHC.Located a)
+#endif
 locate ast = do
   loc <- liftT uniqueSrcSpanT
-  let res = (GHC.L loc ast)
+  -- let res = (GHC.L loc ast)
+  let res = (LL loc ast)
   addEmptyAnn res
   return res
 
 --Adds an empty annotation at the provided location
+#if __GLASGOW_HASKELL__ >= 808
+addEmptyAnn :: (Constraints a) => a -> RefactGhc ()
+#else
 addEmptyAnn :: (SYB.Data a) => GHC.Located a -> RefactGhc ()
+#endif
 addEmptyAnn a = liftT $ addAnn a annNone
 
-addAnnValWithDP :: (SYB.Data a) => GHC.Located a -> DeltaPos -> RefactGhc ()
--- addAnnValWithDP a dp = addAnn a valAnn
---     where valAnn = annNone {annEntryDelta = dp, annsDP = [(G GHC.AnnVal, DP (0,0))]}
+#if __GLASGOW_HASKELL__ >= 808
+addAnnValWithDP :: (Constraints a) => a -> DeltaPos -> RefactGhc ()
+#else
+addAnnValWithDP :: (Constraints a) => GHC.Located a -> DeltaPos -> RefactGhc ()
+#endif
 addAnnValWithDP a dp = liftT $ addSimpleAnnT a dp [(G GHC.AnnVal, DP (0,0))]
 
 --Adds an "AnnVal" annotation at the provided location
-addAnnVal :: (SYB.Data a) => GHC.Located a -> RefactGhc ()
+#if __GLASGOW_HASKELL__ >= 808
+addAnnVal :: (Constraints a) => a -> RefactGhc ()
+#else
+addAnnVal :: (Constraints a) => GHC.Located a -> RefactGhc ()
+#endif
 addAnnVal a = addAnnValWithDP a (DP (0,1))
 
 -- TODO:AZ use the standard API instead
 -- | Adds the given annotation at the provided location
 -- addAnn :: (SYB.Data a) => GHC.Located a -> Annotation -> RefactGhc ()
+#if __GLASGOW_HASKELL__ >= 808
+addAnn :: (Constraints a) => a -> Annotation -> Transform ()
+#else
 addAnn :: (SYB.Data a) => GHC.Located a -> Annotation -> Transform ()
+#endif
 addAnn a ann = do
-  -- currAnns <- fetchAnnsFinal
-  -- let k = mkAnnKey a
-  -- setRefactAnns $ Map.insert k ann currAnns
   let k = mkAnnKey a
   modifyAnnsT (\currAnns -> Map.insert k ann currAnns)
 
 
 -- TODO:AZ replace this with the ghc-exactprint one directly
 -- |Sets the entry delta position of an ast chunk
+#if __GLASGOW_HASKELL__ >= 808
+setDP :: (Constraints a) => DeltaPos -> a -> RefactGhc ()
+#else
 setDP :: (SYB.Data a) => DeltaPos -> GHC.Located a -> RefactGhc ()
-setDP dp ast = do
-  liftT $ setEntryDPT ast dp
-  -- currAnns <- fetchAnnsFinal
-  -- let k = mkAnnKey ast
-  --     mv = Map.lookup k currAnns
-  -- case mv of
-  --   Nothing -> return ()
-  --   Just v -> addAnn ast (v {annEntryDelta = dp})
+#endif
+setDP dp ast = liftT $ setEntryDPT ast dp
 
 -- | Resets the given AST chunk's delta position to zero.
+#if __GLASGOW_HASKELL__ >= 808
+zeroDP :: (Constraints a) => a -> RefactGhc ()
+#else
 zeroDP :: (SYB.Data a) => GHC.Located a -> RefactGhc ()
+#endif
 zeroDP = setDP (DP (0,0))
 
 -- | This just pulls out the successful result from an exact print

@@ -56,6 +56,7 @@ import Language.Haskell.GHC.ExactPrint.Parsers
 import Language.Haskell.GHC.ExactPrint.Types
 import Language.Haskell.GHC.ExactPrint.Utils
 import qualified Haskell.Ide.Engine.PluginApi as HIE (BiosOptions(..),BiosLogLevel(..),defaultOptions)
+import qualified Language.Haskell.LSP.Core    as Core
 import Language.Haskell.Refact.Utils.Monad
 import Language.Haskell.Refact.Utils.MonadFunctions
 import Language.Haskell.Refact.Utils.Types
@@ -228,8 +229,8 @@ runRefactGhcStateLog comp logOn  = do
 testOptions :: HIE.BiosOptions
 testOptions = HIE.defaultOptions {
     HIE.boLogging   = HIE.BlError
-      -- HIE.boLoggingg       = HIE.BlDebug
-      -- HIE.boLoggingg       = HIE.BlVomit
+    -- HIE.boLogging  = HIE.BlDebug
+    -- HIE.boLogging   = HIE.BlVomit
     -- , HIE.boGhcUserOptions = ["-v4", "-DDEBUG"]
     }
 
@@ -346,8 +347,12 @@ setLogger = do
   -}
 
   -- s <- streamHandler stdout DEBUG
-  h <- fileHandler "debug.log" DEBUG
-  updateGlobalLogger rootLoggerName (setHandlers [h])
+  -- h <- fileHandler "debug.log" DEBUG
+  -- updateGlobalLogger rootLoggerName (setHandlers [h])
+  let mLogFileName = Just "debug.log"
+      logLevel = DEBUG
+
+  Core.setupLogger mLogFileName ["hie","HaRe"] logLevel
 
 -- ---------------------------------------------------------------------
 

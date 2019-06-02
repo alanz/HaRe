@@ -8,6 +8,7 @@ module Language.Haskell.Refact.Refactoring.MaybeToMonadPlus
   , compMaybeToMonadPlus
   ) where
 
+import qualified BasicTypes as GHC
 import qualified FastString as GHC
 import qualified GHC        as GHC
 import qualified OccName    as GHC
@@ -176,7 +177,7 @@ doRewriteAsBind bind funNm = do
       lam <- wrapInLambda newPat rhs
   --    logm $ "New pat: " ++ (SYB.showData SYB.Parser 3 newPat)
 #if __GLASGOW_HASKELL__ >= 806
-      let (GHC.L _ (GHC.VarPat _ (GHC.L _ nm))) = newPat
+      let (LL _ (GHC.VarPat _ (GHC.L _ nm))) = newPat
 #elif __GLASGOW_HASKELL__ >= 800
       let (GHC.L _ (GHC.VarPat (GHC.L _ nm))) = newPat
 #else
@@ -389,7 +390,7 @@ containsNothingToNothing argNum pos bind = do
     checkPats :: [GHC.LPat GhcPs] -> Bool
     checkPats patLst =
       if argNum <= length patLst
-      then let (GHC.L _ pat) = patLst !! (argNum - 1) in
+      then let (LL _ pat) = patLst !! (argNum - 1) in
       isNothingPat pat
       else False
 

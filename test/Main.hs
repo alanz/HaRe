@@ -4,7 +4,7 @@
 module Main where
 
 import Control.Monad
--- import TestUtils
+import TestUtils
 import qualified Turtle as Tu
 import qualified Control.Foldl as Fold
 import System.Directory
@@ -17,11 +17,14 @@ import qualified Spec
 
 main :: IO ()
 main = do
-  cleanupDirs (Tu.ends "/.stack-work")
-  cleanupDirs (Tu.ends "/dist")
-  cleanupDirs (Tu.ends "/dist-newstyle")
-  if True
-  -- if False
+  -- setLogger
+  cleanupDirs (Tu.ends     "/stack.yaml")
+  cleanupDirs (Tu.ends     "/.stack-work")
+  cleanupDirs (Tu.ends     "/dist")
+  cleanupDirs (Tu.ends     "/dist-newstyle")
+  cleanupDirs (Tu.contains ".ghc.environ")
+  -- if True
+  if False
     then setupStackFiles
     else setupDistDirs
   hspec Spec.spec
@@ -37,10 +40,11 @@ setupDistDirs :: IO ()
 setupDistDirs =
   forM_ cabalDirs $ \d -> do
     withCurrentDirectory d $ do
-      run "cabal" [ "install", "--dependencies-only" ]
-      run "cabal" [ "configure" ]
-      -- run "cabal-2.4" [ "install", "--dependencies-only", "--allow-newer" ]
-      -- run "cabal-2.4" [ "configure", "--allow-newer" ]
+      -- run "cabal" [ "install", "--dependencies-only" ]
+      -- run "cabal" [ "configure" ]
+
+      run "cabal" [ "new-configure" ]
+      -- run "cabal" [ "new-build" ]
 
 -- This is shamelessly copied from cabal-helper GhcSession test.
 run :: String -> [String] -> IO ()
@@ -69,7 +73,9 @@ stackFiles = map (++"stack.yaml") cabalDirs
 -- not be able to load the files
 resolver :: String
 resolver =
-#if (defined(MIN_VERSION_GLASGOW_HASKELL) && (MIN_VERSION_GLASGOW_HASKELL(8,6,4,0)))
+#if (defined(MIN_VERSION_GLASGOW_HASKELL) && (MIN_VERSION_GLASGOW_HASKELL(8,6,5,0)))
+  "resolver: lts-13.21"
+#elif (defined(MIN_VERSION_GLASGOW_HASKELL) && (MIN_VERSION_GLASGOW_HASKELL(8,6,4,0)))
   "resolver: lts-13.16"
 #elif (defined(MIN_VERSION_GLASGOW_HASKELL) && (MIN_VERSION_GLASGOW_HASKELL(8,6,3,0)))
   "resolver: lts-13.9"

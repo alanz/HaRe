@@ -9,6 +9,7 @@ Build-Type: Simple
 
 Library
   Hs-Source-Dirs:         .
+  -- Exposed-modules:        B
   Build-Depends:          base
                         , syb
   GHC-Options:            -W

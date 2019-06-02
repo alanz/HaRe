@@ -67,6 +67,7 @@ import Language.Haskell.Refact.Utils.LocUtils
 import Language.Haskell.Refact.Utils.Monad
 import Language.Haskell.Refact.Utils.MonadFunctions
 import Language.Haskell.Refact.Utils.Types
+import Language.Haskell.Refact.Utils.Utils
 
 import Language.Haskell.GHC.ExactPrint.Types
 import Language.Haskell.GHC.ExactPrint
@@ -79,24 +80,12 @@ import qualified GHC           as GHC
 import qualified Name          as GHC
 -- import qualified Outputable    as GHC
 import qualified RdrName       as GHC
-#if __GLASGOW_HASKELL__ >= 808
-import SrcLoc (pattern LL)
-#endif
 
 import qualified Data.Generics as SYB
 
 import qualified Data.Map as Map
 
 import Data.Generics.Strafunski.StrategyLib.StrategyLib hiding (liftIO,MonadPlus,mzero)
-
--- ---------------------------------------------------------------------
-
-#if __GLASGOW_HASKELL__ >= 808
-#else
--- | A Pattern Synonym to Set/Get SrcSpans
-pattern LL :: GHC.SrcSpan -> a -> GHC.Located a
-pattern LL sp e <- GHC.L sp e
-#endif
 
 -- ---------------------------------------------------------------------
 

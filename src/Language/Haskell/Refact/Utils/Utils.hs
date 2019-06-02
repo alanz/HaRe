@@ -9,6 +9,8 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-} -- for GHC.DataId
+{-# LANGUAGE ViewPatterns         #-}
+{-# LANGUAGE PatternSynonyms      #-}
 
 module Language.Haskell.Refact.Utils.Utils
        (
@@ -38,6 +40,7 @@ module Language.Haskell.Refact.Utils.Utils
        , showOutputable
 
        , normaliseFilePath
+       , pattern LL
        ) where
 
 import Control.Monad.Identity
@@ -64,7 +67,21 @@ import qualified GHC           as GHC
 import qualified Data.Map      as Map
 import qualified Data.Set      as Set
 
+#if __GLASGOW_HASKELL__ >= 808
+import SrcLoc (pattern LL)
+#endif
+
 -- import Debug.Trace
+
+-- ---------------------------------------------------------------------
+
+#if __GLASGOW_HASKELL__ >= 808
+#else
+-- | A Pattern Synonym to Set/Get SrcSpans
+pattern LL :: GHC.SrcSpan -> a -> GHC.Located a
+-- pattern LL sp e <- GHC.L sp e
+pattern LL sp e = GHC.L sp e
+#endif
 
 -- ---------------------------------------------------------------------
 
@@ -87,7 +104,8 @@ parseSourceFileGhc targetFile = do
   logm $ "parseSourceFileGhc:targetFile=" ++ targetFile
   let uri = HIE.filePathToUri targetFile
   logm $ "parseSourceFileGhc:uri=" ++ show uri
-  _ <- RefactGhc $ lift $ HIE.setTypecheckedModule uri
+  r <- RefactGhc $ lift $ HIE.setTypecheckedModule uri
+  logm $ "parseSourceFileGhc:r=" ++ show r
   let
     -- loader :: GHC.TypecheckedModule -> HIE.CachedInfo -> HIE.IdeM ()
     -- loader :: (Monad m) => GHC.TypecheckedModule -> HIE.CachedInfo -> m ()

@@ -288,6 +288,7 @@ test-suite spec
     , ghc
     , ghc-exactprint >= 0.5.8.1
     -- , ghc-syb-utils
+    , haskell-lsp
     , hie-plugin-api
     , hslogger
     , hspec
