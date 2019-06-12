@@ -4,7 +4,7 @@
 module Main where
 
 import Control.Monad
-import TestUtils
+-- import TestUtils
 import qualified Turtle as Tu
 import qualified Control.Foldl as Fold
 import System.Directory
@@ -15,18 +15,26 @@ import qualified Spec
 
 -- ---------------------------------------------------------------------
 
+data TestEnv = CabalOldBuild
+             | CabalNewBuild
+             | StackBuild
+             deriving (Eq,Show,Ord)
+
+-- ---------------------------------------------------------------------
+
 main :: IO ()
 main = do
   -- setLogger
+  let testBuild = CabalNewBuild
   cleanupDirs (Tu.ends     "/stack.yaml")
   cleanupDirs (Tu.ends     "/.stack-work")
   cleanupDirs (Tu.ends     "/dist")
   cleanupDirs (Tu.ends     "/dist-newstyle")
   cleanupDirs (Tu.contains ".ghc.environ")
-  -- if True
-  if False
-    then setupStackFiles
-    else setupDistDirs
+  case testBuild of
+    CabalOldBuild -> setupDistDirs testBuild
+    CabalNewBuild -> setupDistDirs testBuild
+    StackBuild    -> setupStackFiles
   hspec Spec.spec
 
 -- ---------------------------------------------------------------------
@@ -36,15 +44,18 @@ setupStackFiles =
   forM_ stackFiles $ \f ->
     writeFile f stackFileContents
 
-setupDistDirs :: IO ()
-setupDistDirs =
+setupDistDirs :: TestEnv -> IO ()
+setupDistDirs testEnv =
   forM_ cabalDirs $ \d -> do
     withCurrentDirectory d $ do
-      -- run "cabal" [ "install", "--dependencies-only" ]
-      -- run "cabal" [ "configure" ]
-
-      run "cabal" [ "new-configure" ]
-      -- run "cabal" [ "new-build" ]
+      case testEnv of
+        CabalOldBuild -> do
+          run "cabal" [ "install", "--dependencies-only" ]
+          run "cabal" [ "configure" ]
+        CabalNewBuild -> do
+          run "cabal" [ "new-configure" ]
+          -- run "cabal" [ "new-build" ]
+        StackBuild -> error "Main.setupDistDirs: got StackBuild"
 
 -- This is shamelessly copied from cabal-helper GhcSession test.
 run :: String -> [String] -> IO ()
@@ -59,11 +70,11 @@ run x xs = do
 cabalDirs :: [FilePath]
 cabalDirs =
   [  "./test/testdata/"
-   , "./test/testdata/cabal/cabal3/"
-   , "./test/testdata/cabal/foo/"
-   , "./test/testdata/cabal/cabal4/"
    , "./test/testdata/cabal/cabal1/"
    , "./test/testdata/cabal/cabal2/"
+   , "./test/testdata/cabal/cabal3/"
+   , "./test/testdata/cabal/cabal4/"
+   , "./test/testdata/cabal/foo/"
   ]
 
 stackFiles :: [FilePath]
