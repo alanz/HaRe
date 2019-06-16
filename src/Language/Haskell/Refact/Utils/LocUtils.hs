@@ -23,7 +23,7 @@ module Language.Haskell.Refact.Utils.LocUtils(
 
 import qualified FastString    as GHC
 import qualified GHC           as GHC
-import qualified SrcLoc        as GHC
+-- import qualified SrcLoc        as GHC
 
 import qualified Data.Generics as SYB
 

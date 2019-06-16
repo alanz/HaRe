@@ -506,7 +506,7 @@ handleBind (_, bg) = do
   parsed <- lift getRefactParsed
   let pBnd = getParsedBindByPos ll parsed
   case pBnd of
-    (GHC.L l fb@(GHC.FunBind { GHC.fun_id = (GHC.L _ n), GHC.fun_matches = mg })) -> do
+    (LL l fb@(GHC.FunBind { GHC.fun_id = (GHC.L _ n), GHC.fun_matches = mg })) -> do
       let expr = getExprFromMG mg
       isModCall <- isModFunCall expr
       newExpr <- stripMonArgs False expr
@@ -515,8 +515,8 @@ handleBind (_, bg) = do
         pat <- lift (mkVarPat n)
         pushQueue (pat,newExpr)
         return Nothing
-        else return (Just (GHC.L l (fb {GHC.fun_matches = replaceMGExpr newExpr mg})))
-    (GHC.L l pb@(GHC.PatBind { GHC.pat_lhs = pat, GHC.pat_rhs = grhss })) -> do
+        else return (Just (LL l (fb {GHC.fun_matches = replaceMGExpr newExpr mg})))
+    (LL l pb@(GHC.PatBind { GHC.pat_lhs = pat, GHC.pat_rhs = grhss })) -> do
       let expr = getExprFromGRHSs grhss
       newExpr <- stripMonArgs False expr
       isModCall <- isModFunCall expr
@@ -524,7 +524,7 @@ handleBind (_, bg) = do
         then do
         pushQueue (pat, newExpr)
         return Nothing
-        else return (Just (GHC.L l (pb {GHC.pat_rhs = replaceGRHSsExpr newExpr grhss})))
+        else return (Just (LL l (pb {GHC.pat_rhs = replaceGRHSsExpr newExpr grhss})))
 
 
 replaceMGExpr :: ParsedLExpr -> ParsedMatchGroup -> ParsedMatchGroup

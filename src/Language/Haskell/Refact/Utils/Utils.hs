@@ -3,10 +3,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-} -- for GHC.DataId
 {-# LANGUAGE ViewPatterns         #-}
@@ -81,6 +78,7 @@ import SrcLoc (pattern LL)
 pattern LL :: GHC.SrcSpan -> a -> GHC.Located a
 -- pattern LL sp e <- GHC.L sp e
 pattern LL sp e = GHC.L sp e
+{-# COMPLETE LL #-}
 #endif
 
 -- ---------------------------------------------------------------------
