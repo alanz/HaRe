@@ -1,4 +1,4 @@
-resolver: nightly-2018-04-21 # Last one for GHC 8.4.1
+resolver: lts-13.23
 
 packages:
 - .
@@ -8,6 +8,9 @@ extra-deps:
 - ./submodules/ghc-mod/core
 - ./submodules/ghc-mod/ghc-project-types
 - ./submodules/haskell-ide-engine/hie-plugin-api
+# - ../haskell-ide-engine/hie-plugin-api
+# - ../haskell-ide-engine/submodules/ghc-mod/core
+# - ../haskell-ide-engine/submodules/ghc-mod/ghc-project-types
 
 - cabal-plan-0.5.0.0
 - constrained-dynamic-0.1.0.0
@@ -16,14 +19,11 @@ extra-deps:
 - haskell-lsp-types-0.13.0.0
 - pretty-show-1.8.2
 - rope-utf16-splay-0.3.1.0
-- sorted-list-0.2.1.0
 - syz-0.2.0.0
-- yi-rope-0.11
+- temporary-1.2.1.1
 
 # Neded for the tests
 - conversion-1.2.1
 - conversion-case-insensitive-1.0.0.0
 - conversion-text-1.0.1
 - conversion-bytestring-1.0.1
-
-#----------------------------------------------------
