@@ -467,3 +467,4 @@ test/testdata/stack.yaml
 cabal.project.local*
 /ctags
 .ghc.environment*
+stack*.yaml.lock

@@ -25,7 +25,8 @@ data TestEnv = CabalOldBuild
 main :: IO ()
 main = do
   -- setLogger
-  let testBuild = CabalNewBuild
+  -- let testBuild = CabalNewBuild
+  let testBuild = StackBuild
   cleanupDirs (Tu.ends     "/stack.yaml")
   cleanupDirs (Tu.ends     "/.stack-work")
   cleanupDirs (Tu.ends     "/dist")
