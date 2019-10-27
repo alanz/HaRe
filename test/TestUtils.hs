@@ -55,7 +55,7 @@ import Language.Haskell.GHC.ExactPrint.Annotate
 import Language.Haskell.GHC.ExactPrint.Parsers
 import Language.Haskell.GHC.ExactPrint.Types
 import Language.Haskell.GHC.ExactPrint.Utils
-import qualified Haskell.Ide.Engine.PluginApi as HIE (BiosOptions(..),BiosLogLevel(..),defaultOptions)
+import qualified Haskell.Ide.Engine.PluginApi as HIE -- (BiosOptions(..),BiosLogLevel(..),defaultOptions)
 import qualified Language.Haskell.LSP.Core    as Core
 import Language.Haskell.Refact.Utils.Monad
 import Language.Haskell.Refact.Utils.MonadFunctions
@@ -228,7 +228,8 @@ runRefactGhcStateLog comp logOn  = do
 
 testOptions :: HIE.BiosOptions
 testOptions = HIE.defaultOptions {
-    HIE.boLogging   = HIE.BlError
+    HIE.cradleOptsVerbosity = HIE.Verbose
+    -- HIE.boLogging   = HIE.BlError
     -- HIE.boLogging  = HIE.BlDebug
     -- HIE.boLogging   = HIE.BlVomit
     -- , HIE.boGhcUserOptions = ["-v4", "-DDEBUG"]

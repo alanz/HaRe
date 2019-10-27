@@ -132,7 +132,7 @@ Library
                                , ghc-exactprint >= 0.6.1
                                -- , ghc-syb-utils
                                , hie-plugin-api
-                               , hslogger
+                               , hslogger >= 1.2.12
                                , monad-control
                                , mtl
                                , syb

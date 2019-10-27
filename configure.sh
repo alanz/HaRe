@@ -46,5 +46,5 @@ rm cabal.project.local
 # cabal new-configure --with-compiler=/opt/ghc/8.8.0.20190613/bin/ghc
 # cabal new-configure --with-compiler=/opt/ghc/8.8.0.20190720/bin/ghc --allow-newer
 
-cabal new-configure  --with-compiler=ghc-8.8.1 --allow-newer
-# cabal new-configure --enable-tests --with-compiler=ghc-8.6.5
+# cabal new-configure  --with-compiler=ghc-8.8.1 --allow-newer
+cabal new-configure --enable-tests --with-compiler=ghc-8.6.5

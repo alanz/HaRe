@@ -48,7 +48,7 @@ import Language.Haskell.GHC.ExactPrint.Preprocess
 import Language.Haskell.GHC.ExactPrint.Print
 import Language.Haskell.GHC.ExactPrint.Utils
 
-import qualified Haskell.Ide.Engine.PluginApi as HIE (BiosOptions(..),ModulePath(..),GmModuleGraph(..),setTypecheckedModule,filePathToUri,ifCachedModule,CachedInfo(..))
+import qualified Haskell.Ide.Engine.PluginApi as HIE (BiosOptions(..),ModulePath(..),GmModuleGraph(..),setTypecheckedModule,filePathToUri,ifCachedModule,CachedInfo(..),runWithContext)
 
 import Language.Haskell.Refact.Utils.GhcModuleGraph
 import Language.Haskell.Refact.Utils.GhcVersionSpecific
@@ -102,7 +102,8 @@ parseSourceFileGhc targetFile = do
   logm $ "parseSourceFileGhc:targetFile=" ++ targetFile
   let uri = HIE.filePathToUri targetFile
   logm $ "parseSourceFileGhc:uri=" ++ show uri
-  r <- RefactGhc $ lift $ HIE.setTypecheckedModule uri
+  -- r <- RefactGhc $ lift $ HIE.setTypecheckedModule uri
+  r <- RefactGhc $ lift $ HIE.runWithContext uri (HIE.setTypecheckedModule uri)
   logm $ "parseSourceFileGhc:r=" ++ show r
   let
     -- loader :: GHC.TypecheckedModule -> HIE.CachedInfo -> HIE.IdeM ()
@@ -116,7 +117,6 @@ parseSourceFileGhc targetFile = do
   return ()
 -- ifCachedModule :: (HasGhcModuleCache m, GM.MonadIO m, CacheableModule b)
 --                => FilePath -> a -> (b -> CachedInfo -> m a) -> m a
-
 
 -- ---------------------------------------------------------------------
 

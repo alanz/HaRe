@@ -1,9 +1,14 @@
 packages: .
-          ./submodules/cabal-helper
-          ./submodules/ghc-mod/core
-          ./submodules/ghc-mod/ghc-project-types
+          -- ./submodules/cabal-helper
+          -- ./submodules/ghc-mod/core
+          -- ./submodules/ghc-mod/ghc-project-types
           -- ./submodules/haskell-ide-engine/hie-plugin-api
+
+          ../haskell-ide-engine/submodules/cabal-helper
+          ../haskell-ide-engine/submodules/ghc-mod/core
+          ../haskell-ide-engine/submodules/ghc-mod/ghc-project-types
           ../haskell-ide-engine/hie-plugin-api
+          ../haskell-ide-engine/hie-bios
 
 allow-newer: fclabels-2.0.3.3:template-haskell,base
 allow-newer: bytestring-trie-0.2.5.0:template-haskell,base

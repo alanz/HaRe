@@ -217,6 +217,8 @@ instance Fail.MonadFail RefactGhc where
 
 -- ---------------------------------------------------------------------
 -- runIdeGhcM :: GM.Options -> IdePlugins -> Maybe (Core.LspFuncs Config) -> TVar IdeState -> IdeGhcM a -> IO a
+-- runIdeGhcM ::               IdePlugins -> Maybe (Core.LspFuncs Config) -> TVar IdeState -> IdeGhcM a -> IO a
+
 
 runRefactGhc ::
   RefactGhc a -> RefactState -> HIE.BiosOptions -> IO (a, RefactState)
