@@ -99,6 +99,8 @@ getTargetGhc (HIE.ModulePath _mn fp) = parseSourceFileGhc fp
 -- | Parse a single source file into a GHC session
 parseSourceFileGhc :: FilePath -> RefactGhc ()
 parseSourceFileGhc targetFile = do
+  d <- liftIO getCurrentDirectory
+  logm $ "parseSourceFileGhc:cwd=" ++ d
   logm $ "parseSourceFileGhc:targetFile=" ++ targetFile
   let uri = HIE.filePathToUri targetFile
   logm $ "parseSourceFileGhc:uri=" ++ show uri

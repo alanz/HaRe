@@ -152,7 +152,7 @@ spec = do
       let dir = "./test/testdata/cabal/cabal1"
 
       let settings = defaultSettings { rsetEnabledTargets = (True,True,False,False)
-                                     -- , rsetVerboseLevel = Debug
+                                     , rsetVerboseLevel = Debug
                                      }
 
       r <-  cdAndDo dir $ rename settings testOptions "./src/Foo/Bar.hs" "baz1" (3, 1)

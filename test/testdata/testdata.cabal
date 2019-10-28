@@ -3,7 +3,7 @@ Version: 0
 Author: Alan Zimmerman
 Maintainer: Alan Zimmerman
 -- cabal-helper for cabal 2.2/GHC 8.4 needs a cabal version >= 2
-Cabal-Version: >= 2.00
+Cabal-Version: >= 2.0
 Build-Type: Simple
 -- Other-Extensions: CPP
 

@@ -54,7 +54,7 @@ import Data.IORef
 --import Data.Time.Clock
 import Distribution.Helper
 import Exception
-import qualified Haskell.Ide.Engine.PluginApi as HIE (BiosOptions(..),ModulePath(..),GmComponent(..),GmComponentType(..),GmModuleGraph(..),runIdeGhcMBare,IdeGhcM,HasGhcModuleCache(..),cabalModuleGraphs)
+import qualified Haskell.Ide.Engine.PluginApi as HIE
 import Language.Haskell.Refact.Utils.Types
 import Language.Haskell.GHC.ExactPrint
 import Language.Haskell.GHC.ExactPrint.Types
@@ -260,8 +260,9 @@ instance ExceptionMonad (StateT RefactState HIE.IdeGhcM) where
 -- ---------------------------------------------------------------------
 
 cabalModuleGraphs :: RefactGhc [HIE.GmModuleGraph]
-cabalModuleGraphs = RefactGhc $ lift HIE.cabalModuleGraphs
-
+-- cabalModuleGraphs = RefactGhc $ lift HIE.cabalModuleGraphs
+cabalModuleGraphs = RefactGhc $ lift $ HIE.runWithContext uri HIE.cabalModuleGraphs
+  where uri = HIE.filePathToUri "./Renaming/D1.hs"
 {-
 cabalModuleGraphs :: RefactGhc [HIE.GmModuleGraph]
 cabalModuleGraphs = RefactGhc $ lift doCabalModuleGraphs
