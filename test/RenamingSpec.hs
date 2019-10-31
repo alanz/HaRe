@@ -19,8 +19,8 @@ spec = do
 
   describe "Renaming" $ do
     it "renames in D1 B1 C1 A1 6 6" $ do
-     -- r <- ct $ rename defaultTestSettings testOptions "./Renaming/D1.hs" "AnotherTree" (6,6)
-     r <- ct $ rename logTestSettings testOptions "./Renaming/D1.hs" "AnotherTree" (6,6)
+     r <- ct $ rename defaultTestSettings testOptions "./Renaming/D1.hs" "AnotherTree" (6,6)
+     -- r <- ct $ rename logTestSettings testOptions "./Renaming/D1.hs" "AnotherTree" (6,6)
 
      r' <- ct $ mapM makeRelativeToCurrentDirectory r
 

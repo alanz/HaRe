@@ -468,3 +468,9 @@ cabal.project.local*
 /ctags
 .ghc.environment*
 stack*.yaml.lock
+/test/testdata/cabal/cabal1/hie.yaml
+/test/testdata/cabal/cabal2/hie.yaml
+/test/testdata/cabal/cabal3/hie.yaml
+/test/testdata/cabal/cabal4/hie.yaml
+/test/testdata/cabal/foo/hie.yaml
+/test/testdata/hie.yaml
