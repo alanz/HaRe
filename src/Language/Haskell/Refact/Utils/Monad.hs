@@ -244,7 +244,7 @@ instance GHC.HasDynFlags RefactGhc where
 
 instance HIE.HasGhcModuleCache RefactGhc where
   getModuleCache = RefactGhc $ lift HIE.getModuleCache
-  setModuleCache mc = RefactGhc $ lift $ HIE.setModuleCache mc
+  modifyModuleCache mc = RefactGhc $ lift $ HIE.modifyModuleCache mc
 
 -- ---------------------------------------------------------------------
 
