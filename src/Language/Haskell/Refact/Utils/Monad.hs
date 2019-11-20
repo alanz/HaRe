@@ -46,6 +46,7 @@ import qualified HscTypes      as GHC
 import qualified Outputable    as GHC
 
 import Control.Applicative
+import Control.Concurrent.STM
 #if __GLASGOW_HASKELL__ >= 806
 import qualified Control.Monad.Fail as Fail
 #endif
@@ -223,7 +224,19 @@ instance Fail.MonadFail RefactGhc where
 runRefactGhc ::
   RefactGhc a -> RefactState -> HIE.BiosOptions -> IO (a, RefactState)
 runRefactGhc comp initState opt =
-    HIE.runIdeGhcMBare opt (runStateT (unRefactGhc comp) initState)
+    -- HIE.runIdeGhcMBare opt (runStateT (unRefactGhc comp) initState)
+    runIdeGhcMBare opt (runStateT (unRefactGhc comp) initState)
+
+-- ---------------------------------------------------------------------
+-- | Run an IdeGhcM in an external context (e.g. HaRe), with no plugins or LSP functions
+-- runIdeGhcMBare :: BiosOptions -> IdeGhcM a -> IO a
+runIdeGhcMBare :: HIE.CradleOpts -> HIE.IdeGhcM a -> IO a
+runIdeGhcMBare _biosOptions f = do
+  let
+    mlf      = Nothing
+  stateVar <- newTVarIO HIE.emptyIdeState
+  HIE.runIdeGhcM HIE.emptyIdePlugins mlf stateVar f
+
 
 -- ---------------------------------------------------------------------
 
@@ -246,7 +259,8 @@ instance GHC.HasDynFlags RefactGhc where
 
 instance HIE.HasGhcModuleCache RefactGhc where
   getModuleCache = RefactGhc $ lift HIE.getModuleCache
-  setModuleCache mc = RefactGhc $ lift $ HIE.setModuleCache mc
+  modifyModuleCache mc = RefactGhc $ lift $ HIE.modifyModuleCache mc
+  -- setModuleCache mc = RefactGhc $ lift $ HIE.setModuleCache mc
 
 -- ---------------------------------------------------------------------
 
@@ -260,7 +274,9 @@ instance ExceptionMonad (StateT RefactState HIE.IdeGhcM) where
 -- ---------------------------------------------------------------------
 
 cabalModuleGraphs :: RefactGhc [HIE.GmModuleGraph]
--- cabalModuleGraphs = RefactGhc $ lift HIE.cabalModuleGraphs
+cabalModuleGraphs = RefactGhc $ lift HIE.cabalModuleGraphs
+
+{- ++AZ++ TODO: this needs to be implemented properly
 cabalModuleGraphs = RefactGhc $ lift $ HIE.runWithContext uri HIE.cabalModuleGraphs
   where uri = HIE.filePathToUri "./Renaming/D1.hs"
 {-
@@ -276,6 +292,7 @@ cabalModuleGraphs = RefactGhc $ lift doCabalModuleGraphs
           let graph = map HIE.gmcHomeModuleGraph $ Map.elems mcs
           return graph
         Nothing -> return []
+-}
 -}
 
 -- ---------------------------------------------------------------------

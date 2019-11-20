@@ -3,7 +3,10 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-} -- for GHC.DataId
 {-# LANGUAGE ViewPatterns         #-}
@@ -29,6 +32,7 @@ module Language.Haskell.Refact.Utils.Utils
        , serverModsAndFiles
        -- , lookupAnns
        , runMultRefacSession
+       , runWithContext
 
        , modifiedFiles
        , writeRefactoredFiles
@@ -48,7 +52,7 @@ import Language.Haskell.GHC.ExactPrint.Preprocess
 import Language.Haskell.GHC.ExactPrint.Print
 import Language.Haskell.GHC.ExactPrint.Utils
 
-import qualified Haskell.Ide.Engine.PluginApi as HIE (BiosOptions(..),ModulePath(..),GmModuleGraph(..),setTypecheckedModule,filePathToUri,ifCachedModule,CachedInfo(..),runWithContext)
+import qualified Haskell.Ide.Engine.PluginApi as HIE
 
 import Language.Haskell.Refact.Utils.GhcModuleGraph
 import Language.Haskell.Refact.Utils.GhcVersionSpecific
@@ -105,7 +109,10 @@ parseSourceFileGhc targetFile = do
   let uri = HIE.filePathToUri targetFile
   logm $ "parseSourceFileGhc:uri=" ++ show uri
   -- r <- RefactGhc $ lift $ HIE.setTypecheckedModule uri
-  r <- RefactGhc $ lift $ HIE.runWithContext uri (HIE.setTypecheckedModule uri)
+  -- r <- RefactGhc $ lift $ HIE.setTypecheckedModule uri
+  -- r <- RefactGhc $ lift $ HIE.runWithContext uri (HIE.setTypecheckedModule uri)
+  -- r <- RefactGhc $ lift $ runWithContext uri (HIE.setTypecheckedModule uri)
+  r <- RefactGhc $ lift $ runWithContext targetFile (HIE.setTypecheckedModule uri)
   logm $ "parseSourceFileGhc:r=" ++ show r
   let
     -- loader :: GHC.TypecheckedModule -> HIE.CachedInfo -> HIE.IdeM ()
@@ -119,6 +126,14 @@ parseSourceFileGhc targetFile = do
   return ()
 -- ifCachedModule :: (HasGhcModuleCache m, GM.MonadIO m, CacheableModule b)
 --                => FilePath -> a -> (b -> CachedInfo -> m a) -> m a
+
+-- ---------------------------------------------------------------------
+
+runWithContext :: Monoid a
+  => FilePath -> HIE.IdeGhcM (HIE.IdeResult a) -> HIE.IdeGhcM (HIE.IdeResult (HIE.IdeResult a))
+runWithContext fp act = do
+    df <- GHC.getSessionDynFlags
+    HIE.runActionWithContext df (Just fp) (pure mempty) act
 
 -- ---------------------------------------------------------------------
 

@@ -56,6 +56,7 @@ import Language.Haskell.GHC.ExactPrint.Parsers
 import Language.Haskell.GHC.ExactPrint.Types
 import Language.Haskell.GHC.ExactPrint.Utils
 import qualified Haskell.Ide.Engine.PluginApi as HIE -- (BiosOptions(..),BiosLogLevel(..),defaultOptions)
+-- import qualified Haskell.Ide.Engine.PluginApi as HIE (BiosOptions, defaultOptions)
 import qualified Language.Haskell.LSP.Core    as Core
 import Language.Haskell.Refact.Utils.Monad
 import Language.Haskell.Refact.Utils.MonadFunctions
