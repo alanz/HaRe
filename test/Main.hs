@@ -181,12 +181,19 @@ hieYamlCradleCabalContents = unlines
   , "  multi:"
   ]
 
-  -- cabal/cabal1
+  -- testdata root
+  ++ makeCabalCradleTarget "./B.hs"      "lib:testdata"
+  ++ makeCabalCradleTarget "./BCpp.hs"   "lib:testdata"
+  ++ makeCabalCradleTarget "./BCppTC.hs" "lib:testdata"
+
+  -- cabal/cabal1 [need to make specific for the dir]
   ++ makeCabalCradleTarget "./src/main.hs" "cabal1"
   ++ makeCabalCradleTarget "./src/Foo/Bar.hs" "cabal1"
+  ++ makeCabalCradleTarget "./src/main.hs" "cabal1"
 
-  -- ++ makeCabalCradleTarget "./" "testdata:a1"
-  -- ++ makeCabalCradleTarget "./" "testdata:a2"
+  -- cabal/cabal4 [need to make specific for the dir]
+  ++ makeCabalCradleTarget "./src/Foo/Bar.hs" "cabal4"
+
   )
 
 {-

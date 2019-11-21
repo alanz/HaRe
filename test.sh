@@ -22,4 +22,7 @@
 # --failure-report .hspec-failures
 # --rerun
 # --rerun-all-on-success
-./dist-newstyle/build/x86_64-linux/ghc-8.6.5/HaRe-0.8.4.1/t/spec/build/spec/spec --match  "loads a series of files based on cabal1 2"
+# ./dist-newstyle/build/x86_64-linux/ghc-8.6.5/HaRe-0.8.4.1/t/spec/build/spec/spec --match  "loads a series of files based on cabal1 2"
+# ./dist-newstyle/build/x86_64-linux/ghc-8.6.5/HaRe-0.8.4.1/t/spec/build/spec/spec --match  "loads a series of files based on cabal1 1"
+./dist-newstyle/build/x86_64-linux/ghc-8.6.5/HaRe-0.8.4.1/t/spec/build/spec/spec --match  "loading a file"
+# ./dist-newstyle/build/x86_64-linux/ghc-8.6.5/HaRe-0.8.4.1/t/spec/build/spec/spec --match  "loads the same file more than once"
