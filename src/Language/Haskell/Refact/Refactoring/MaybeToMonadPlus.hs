@@ -8,7 +8,7 @@ module Language.Haskell.Refact.Refactoring.MaybeToMonadPlus
   , compMaybeToMonadPlus
   ) where
 
--- import qualified BasicTypes as GHC
+import qualified BasicTypes as GHC
 import qualified FastString as GHC
 import qualified GHC        as GHC
 import qualified OccName    as GHC

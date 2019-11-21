@@ -27,6 +27,7 @@ import qualified GHC           as GHC
 
 import qualified Data.Generics as SYB
 
+import Language.Haskell.Refact.Utils.Utils
 import Language.Haskell.Refact.Utils.Types
 import Language.Haskell.GHC.ExactPrint.Types
 
@@ -158,7 +159,7 @@ getSrcSpan t = res t
 
     literalInPat :: GHC.LPat GhcPs -> Maybe GHC.SrcSpan
 #if __GLASGOW_HASKELL__ >= 808
-    literalInPat (GHC.LL l _) = Just l
+    literalInPat (LL l _) = Just l
 #else
     literalInPat (GHC.L l _) = Just l
 #endif
