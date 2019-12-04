@@ -185,6 +185,25 @@ hieYamlCradleCabalContents = unlines
   ++ makeCabalCradleTarget "./B.hs"      "lib:testdata"
   ++ makeCabalCradleTarget "./BCpp.hs"   "lib:testdata"
   ++ makeCabalCradleTarget "./BCppTC.hs" "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/PatIn1.hs"    "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/FunIn1.hs"    "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/FunIn2.hs"    "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/FunIn3.hs"    "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/FunIn4.hs"    "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/FunIn6.hs"    "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/Nested.hs"    "lib:testdata"
+  ++ makeCabalCradleTarget "./AddOneParameter/MultiFun1.hs" "lib:testdata"
+
+  ++ makeCabalCradleTarget "./AddOneParameter/A1.hs" "addoneparama1"
+  ++ makeCabalCradleTarget "./AddOneParameter/C1.hs" "addoneparama1"
+  ++ makeCabalCradleTarget "./AddOneParameter/D1.hs" "addoneparama1"
+
+  ++ makeCabalCradleTarget "./AddOneParameter/A2.hs" "addoneparama2"
+  ++ makeCabalCradleTarget "./AddOneParameter/C2.hs" "addoneparama2"
+  ++ makeCabalCradleTarget "./AddOneParameter/D2.hs" "addoneparama2"
+
+  ++ makeCabalCradleTarget "./AddOneParameter/A3.hs" "addoneparama3"
+  ++ makeCabalCradleTarget "./AddOneParameter/D3.hs" "addoneparama3"
 
   -- cabal/cabal1 [need to make specific for the dir]
   ++ makeCabalCradleTarget "./src/main.hs" "cabal1"
